@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "+6vqTfshoxlWbCNFIhvcc4dcTV0kl9ADzAhJSJA1vWLCyBoobHQCmjIL0H8fYG3dITVKM7k7EHkSgBn4gxairQ==",
+  "success": true,
+  "projectFilePath": "/home/juliojpinto/Personal/College/LI4-Project/Leilart/Leilart.csproj",
+  "expectedPackageFiles": [
+    "/home/juliojpinto/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.0/microsoft.aspnetcore.app.ref.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
