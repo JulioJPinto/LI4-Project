@@ -1,0 +1,10 @@
+<button class=@("border-2 py-2 px-4 border-black " + CustomStyle)>
+    @Title
+</button>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string CustomStyle {get; set; }
+}

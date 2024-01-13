@@ -1,0 +1,52 @@
+@page "/auctions"
+
+<PageTitle>Auctions</PageTitle>
+
+<div class="w-full px-16 pt-14">
+    <h3 class="font-medium pb-3">Auctions</h3>
+    <h1 class="font-bold text-4xl pb-4">At the moment</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
+    
+    @if (!_hasLoadedData)
+    {
+        <div class="w-full h-[50vh] flex justify-center content-center flex-wrap">
+            <Spinner/>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-4 gap-y-8 pt-12">
+            @foreach (Product product in _products)
+            {
+                <div>
+                    <div>
+                        <img src="https://placehold.co/300"/>
+                    </div>
+                    <h2 class="font-semibold">@product.name</h2>
+                    <h3>@product.variant</h3>
+                    <h2 class="font-semibold text-xl">$@product.price</h2>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    class Product
+    {
+        public string name;
+        public string variant;
+        public int price;
+    }
+
+    private List<Product> _products = new List<Product>();
+    private bool _hasLoadedData = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            _products.Add(new Product(){name = "Product name", price = 10, variant = "Variant"});
+        }
+    }
+}
