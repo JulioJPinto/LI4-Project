@@ -11,8 +11,13 @@
         </div>
         <div class="mt-8">
             <h2 class="text-6xl font-bold">Product</h2>
-            <div class="my-8">
-                
+            <div class="mt-8 py-4 px-16 rounded-lg border-2">
+                <div class="text-6xl font-semibold text-center  ">$$$.$$€</div>
+            </div>
+            <div class="mt-2 text-md font-regular">Increments: $$$.$$€</div>
+            <div class="mt-64 flex flex-row">
+                <PrimaryButton Title="Bid"/>
+                <input class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">  
             </div>
         </div>
 
@@ -25,6 +30,7 @@
     class Bids
     {
         public string name;
+        public int id;
         public int current_bid;
         public string current_bidder;
         public int starting_price;
