@@ -19,16 +19,24 @@
           </li>
         }
       </ul>
+      
       <div class="mx-8 flex gap-x-4">
-        <PrimaryButton Title="Log In"/>
-        <PrimaryButton Title="Sign Up" CustomStyle="bg-black text-white" />
-      </div>
+        @if (!_isLogedIn)
+        {
+          <a href="/login"><PrimaryButton Title="Log In"/></a>
+          <a href="/signup"><PrimaryButton Title="Sign Up" CustomStyle="bg-black text-white"/></a>
+        }
+        else
+        {
+          <a href="/user"><PrimaryButton Title="Logged In"></PrimaryButton></a>
+        }
     </div>
   </div>
 </nav>
 
 @code {
 
+  private bool _isLogedIn = true;
   private Dictionary<string, string> _navLinks = new Dictionary<string, string>()
   {
     {"Auctions", "/auctions"},

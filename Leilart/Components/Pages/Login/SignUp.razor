@@ -1,0 +1,35 @@
+@page "/signup"
+@using Leilart.Components.Layout
+@layout LoginLayout
+
+<div class="flex flex-row">
+    <div class="w-full justify-items-stretch">
+        <img src="https://placehold.co/300"/>
+    </div>
+    
+    <div class="w-full mt-16 mx-16">
+        <img src="assets/images/leilart.svg"/>
+        <div class="my-64 justify-items-center">
+            <div class="w-1/2">
+                <h4 class="text-2xl font-semibold my-4">Signup</h4>
+                <div class="font-regular">Email</div>
+                <input class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
+                <div class="font-regular">Password</div>
+                <input class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
+            </div>
+            <div class="mt-8">
+                <PrimaryButton Title="Sign Up" CustomStyle="text-white bg-black"></PrimaryButton>
+            </div>
+            <div class="mt-1">
+                <p>Already have an Account?</p>
+                <a href="/login">Login</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@code {
+    
+}
