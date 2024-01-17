@@ -1,0 +1,36 @@
+@page "/Auction"
+
+<div class="mx-80 mt-16">
+    <div class="flex flex-row gap-16">
+        <div class="flex flex-col">
+            <img src="https://placehold.co/300"/>
+            <div class="flex flex-row gap-4 mt-4">
+                <img src="https://placehold.co/300"/>
+                <img src="https://placehold.co/300"/>
+            </div>
+        </div>
+        <div class="mt-8">
+            <h2 class="text-6xl font-bold">Product</h2>
+            <div class="my-8">
+                
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+
+    class Bids
+    {
+        public string name;
+        public int current_bid;
+        public string current_bidder;
+        public int starting_price;
+        public DateTime starting_time;
+    }
+
+    private bool _hasFinished = false;
+
+}
