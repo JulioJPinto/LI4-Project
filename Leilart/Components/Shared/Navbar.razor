@@ -10,27 +10,28 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
         </svg>
     </button>
-    <div class="hidden w-full md:w-auto md:flex">
-      <ul class="font-regular flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
-        @foreach (KeyValuePair<string, string> link in _navLinks)
-        {
-          <li class="flex items-center">
-            <a href="@link.Value" class="font-normal block py-2 px-3 text-black rounded md:bg-transparent md:text-black md:p-0" aria-current="page">@link.Key</a>
-          </li>
-        }
-      </ul>
+  <div class="hidden w-full md:w-auto md:flex">
+    <ul class="font-regular flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
+      @foreach (KeyValuePair<string, string> link in _navLinks)
+      {
+        <li class="flex items-center">
+          <a href="@link.Value" class="font-normal block py-2 px-3 text-black rounded md:bg-transparent md:text-black md:p-0" aria-current="page">@link.Key</a>
+        </li>
+      }
+    </ul>
       
-      <div class="mx-8 flex gap-x-4">
-        @if (!_isLogedIn)
-        {
-          <a href="/login"><PrimaryButton Title="Log In"/></a>
-          <a href="/signup"><PrimaryButton Title="Sign Up" CustomStyle="bg-black text-white"/></a>
-        }
-        else
-        {
-          <a href="/user"><PrimaryButton Title="Logged In"></PrimaryButton></a>
-        }
+    <div class="mx-8 flex gap-x-4">
+      @if (!_isLogedIn)
+      {
+        <a href="/login"><PrimaryButton Title="Log In"/></a>
+        <a href="/signup"><PrimaryButton Title="Sign Up" CustomStyle="bg-black text-white"/></a>
+      }
+      else
+      {
+        <a href="/user"><PrimaryButton Title="Logged In"></PrimaryButton></a>
+      }
     </div>
+  </div>
   </div>
 </nav>
 
