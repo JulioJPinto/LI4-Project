@@ -1,0 +1,53 @@
+@page "/admin/users"
+@using Leilart.Components.Layout
+@layout AdminLayout
+
+<div class="w-full px-16">
+  <div class="py-8">
+    <h2 class="text-3xl font-bold py-4">Users</h2>
+    <div class="text-lg font-regular py-4">Users</div>
+    <ul role="list">
+      @foreach (User user in _users)
+      {
+        <li class="flex justify-between py-8 px-4 my-2 rounded-md border-2 border-slate-300 hover:border-black">
+
+          <div class="flex min-w-0 gap-x-4">
+            <a href="/user">
+              <img class="h-12 w-12 flex-none rounded-full bg-gray-50" src=@user.photo_url alt="">
+            </a>
+            <div class="min-w-0 flex-auto">
+              <p class="text-sm font-semibold leading-6 text-gray-900">@user.name</p>
+              <p class="mt-1 truncate text-xs leading-5 text-gray-500">@user.email</p>
+            </div>
+          </div>
+
+          <div>
+            <a><PrimaryButton Title="Notify"/></a>
+            <a><PrimaryButton Title="Ban"/></a>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
+
+@code {
+
+  class User
+  {
+    public string photo_url = "https://placehold.co/100";
+    public string name = "Placeholder";
+    public string email = "email@email.com";
+  }
+
+  private List<User> _users = new List<User>();
+
+  protected override async Task OnInitializedAsync()
+  {
+    for (int i = 0; i < 5; i++)
+    {
+      _users.Add(new User());
+    }
+  }
+
+}

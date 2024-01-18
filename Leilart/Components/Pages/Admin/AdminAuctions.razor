@@ -1,36 +1,15 @@
-@page "/user"
+@page "/admin/auctions"
 @using Leilart.Components.Layout
-@layout MainLayout
+@layout AdminLayout
 
-
-<div class="mt-16 mx-32">
-    <div class="flex flex-row">
-        <div class="rounded-full overflow-hidden">
-            <img src="https://placehold.co/100"/>
-        </div>
-        <div class="mx-8 mt-4 ">
-            <div class="flex flex-row">
-                <div>
-                    <div class="text-3xl font-semibold">
-                        Username
-                    </div>
-                    <div class="text-lg font-regular">
-                        email@email.pt
-                    </div>
-                </div>
-                <a class="mx-64">
-                    <PrimaryButton Title="Edit"></PrimaryButton>
-                </a>
-            </div>
-        </div>
-    </div>
+<div class="w-full px-16 pt-14">
     <div class="py-8">
         <div class="text-sm font-regular my-2" >Auctions</div>
-        <div class="text-3xl font-bold">In Progress</div>
+        <div class="text-3xl font-bold">On going</div>
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
             @foreach (Product product in _products)
             {
-                <a href="/auction">
+                <a href="/auction">   
                     <div class="relative items-center">
                         <img src="https://placehold.co/300"/>
                         <h2 class="font-semibold">@product.name</h2>
@@ -43,7 +22,7 @@
     </div>
     <div class="py-8">
         <div class="text-sm font-regular my-2" >Auctions</div>
-        <div class="text-3xl font-bold">Won</div>
+        <div class="text-3xl font-bold">Recently Finished</div>
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
             @foreach (Product product in _products)
             {
@@ -59,6 +38,7 @@
         </div>
     </div>
 </div>
+
 
 @code {
     class Product

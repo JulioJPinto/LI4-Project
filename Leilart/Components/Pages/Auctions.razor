@@ -18,12 +18,15 @@
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
             @foreach (Product product in _products)
             {
-                <div class="relative items-center">
-                    <img src="https://placehold.co/300"/>
-                    <h2 class="font-semibold">@product.name</h2>
-                    <h3>@product.variant</h3>
-                    <h2 class="font-semibold text-xl">$@product.price</h2>
-                </div>
+                <a href="/auction">
+                    <div class="relative items-center">
+                        <img src="https://placehold.co/300"/>
+                        <h2 class="font-semibold">@product.name</h2>
+                        <h3>@product.variant</h3>
+                        <h2 class="font-semibold text-xl">$@product.price</h2>
+                    </div>
+                </a>
+                
             }
         </div>
     }
