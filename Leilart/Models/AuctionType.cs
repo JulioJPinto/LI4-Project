@@ -1,14 +1,9 @@
-namespace DefaultNamespace;
+namespace Leilart.Models.AuctionType;
 
-public class AuctionType
+public enum AuctionType
 {
-    public int Id { get; private set; }
-    public string Nome { get; private set; }
-
-    public AuctionType(int id, string nome)
-    {
-        this.Id = id;
-        this.Nome = nome;
-    }
+    INGLÊS,
+    HOLANDÊS,
+    SILENCIOSO
     
 }

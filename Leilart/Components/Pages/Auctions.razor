@@ -22,8 +22,8 @@
                     <div class="relative items-center">
                         <img src="https://placehold.co/300"/>
                         <h2 class="font-semibold">@product.name</h2>
-                        <h3>@product.variant</h3>
-                        <h2 class="font-semibold text-xl">$@product.price</h2>
+                        <h3>@product.IdVariety</h3>
+                        <h2 class="font-semibold text-xl">$@product.Stock</h2>
                     </div>
                 </a>
                 
@@ -33,13 +33,6 @@
 </div>
 
 @code {
-    class Product
-    {
-        public string name;
-        public string variant;
-        public int price;
-        public string photo_url;
-    }
     
     private List<Product> _products = new List<Product>();
     private bool _hasLoadedData = true;
@@ -48,7 +41,7 @@
     {
         for (int i = 0; i < 20; i++)
         {
-            _products.Add(new Product(){name = "Product name", price = 10, variant = "Variant"});
+            _products.Add(new Product());
         }
     }
 }

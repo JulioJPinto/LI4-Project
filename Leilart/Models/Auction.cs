@@ -1,4 +1,4 @@
-namespace DefaultNamespace;
+namespace Leilart.Models.Auction;
 
 using System;
 
