@@ -2,7 +2,7 @@ namespace DefaultNamespace;
 
 using System;
 
-public class Leilao
+public class Auction
 {
     public int Id { get; private set; }
     public int TipoLeilao { get; private set; }
@@ -15,7 +15,7 @@ public class Leilao
     public int? LicitacaoAtual { get; private set; }
     public bool Estado { get; private set; }
 
-    public Leilao(int id, int tipo_leilao, int produto, int valor_minimo, int valor_inicial, int incremento, DateTime inicio, DateTime, fim, int licitacao_atual, bool estado)
+    public Auction(int id, int tipo_leilao, int produto, int valor_minimo, int valor_inicial, int incremento, DateTime inicio, DateTime fim, int licitacao_atual, bool estado)
     {
         this.Id = id;
         this.TipoLeilao = tipo_leilao;
