@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+6vqTfshoxlWbCNFIhvcc4dcTV0kl9ADzAhJSJA1vWLCyBoobHQCmjIL0H8fYG3dITVKM7k7EHkSgBn4gxairQ==",
+  "dgSpecHash": "3j6QPbE6yY1kTe4VkYASPIyWsXSv3+97Mn1MqKEKS2wNHmOvL74SUJGTB7qNaojFr91ZgBsaZu4gCv33wv6lCQ==",
   "success": true,
-  "projectFilePath": "/home/juliojpinto/Personal/College/LI4-Project/Leilart/Leilart.csproj",
-  "expectedPackageFiles": [
-    "/home/juliojpinto/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.0/microsoft.aspnetcore.app.ref.8.0.0.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\35196\\Desktop\\Programming\\LI4\\LI4-Project\\Leilart\\Leilart.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
