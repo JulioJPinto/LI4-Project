@@ -1,3 +1,5 @@
+@inject Data.IDBConnection database;
+
 @page "/auctions"
 
 <PageTitle>Auctions</PageTitle>
@@ -39,9 +41,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        for (int i = 0; i < 20; i++)
-        {
-            _products.Add(new Product());
-        }
+        _products = database.Query<Product>("SELECT * FROM product").ToList();
     }
 }

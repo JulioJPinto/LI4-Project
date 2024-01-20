@@ -1,4 +1,6 @@
 -- Insert seed data for auction_type table
+USE Leilart;
+
 INSERT INTO auction_type (type) VALUES
                                     ('English Auction'),
                                     ('Dutch Auction'),

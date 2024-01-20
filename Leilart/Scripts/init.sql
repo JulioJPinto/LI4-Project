@@ -1,10 +1,11 @@
 -- init.sql
-
+USE master;
+GO
 -- Create the database
-CREATE DATABASE Leilart; -- Replace YourDatabaseName with the desired name
+CREATE DATABASE [Leilart];
+GO
 
--- Use the created database
-USE Leilart;
+USE [Leilart];
 
 -- Create auction_type table
 CREATE TABLE auction_type (

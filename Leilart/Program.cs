@@ -1,10 +1,13 @@
 using Leilart.Components;
+using Leilart.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.
+    AddTransient<IDBConnection, DBConnection>();
 
 var app = builder.Build();
 
