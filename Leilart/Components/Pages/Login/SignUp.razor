@@ -1,6 +1,10 @@
 @page "/signup"
+@rendermode InteractiveServer
+
 @using Leilart.Components.Layout
 @using System.Runtime.CompilerServices
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime js
 @inject Data.IDBConnection database;
 @layout LoginLayout
 
@@ -12,22 +16,27 @@
     <div class="w-full mt-16 mx-16">
         <img src="assets/images/leilart.svg"/>
         <div class="my-48 justify-items-center">
-            <form @onsubmit="signup">
+            <div>
                 <div class="form-group w-1/2">
                     <h4 class="text-2xl font-semibold my-4">Signup</h4>
                     <label for="email" class="font-regular">Email*</label>
-                    <input type="email" id="email" @bind="email" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                    <input type="email" id="email" @bind="_SignUp.email" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                    @if (error != "")
+                    {
+                        <p class="text-md text-red-500">@error</p>
+                    }
                     <label for="phone" class="font-regular">Cellphone</label>
-                    <input type="phone" id="phone" @bind="phone" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                    <input type="phone" id="phone" @bind="_SignUp.phone" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
                     <label for="pass" class="font-regular">Password</label>
-                    <input type="pass" id="pass" @bind="password" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                    <input type="pass" id="pass" @bind="_SignUp.password" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
                 </div>
                 <div class="mt-8">
-                    <a type="submit">
-                        <PrimaryButton Title="Sign Up" CustomStyle="text-white bg-black"></PrimaryButton>
-                    </a>
+                    <button @onclick="SignUpFunc" class="border-2 py-2 px-4 border-black rounded-sm bg-black text-white">
+                       Sign up
+                    </button>
+                    
                 </div>
-            </form>
+            </div>
             <div class="mt-1">
                 <p>Already have an Account?</p>
                 <a href="/login">Login</a>
@@ -37,18 +46,36 @@
 </div>
 
 @code {
-    private string email;
-    private string phone;
-    private string password;
+
+    public SignUpModel _SignUp = new SignUpModel();
+
+    private string error = "";
     
+    public class SignUpModel
+    {
+        [EmailAddress, Required]
+        public string email { get; set; }
+        public string phone { get; set; }
+        [Required]
+        public string password { get; set; }
+
+        public SignUpModel()
+        {
+            this.email = "";
+            this.phone = "";
+            this.password = "";
+        }
+    }
     
     private bool IsValidEmail(string email)
     {
         string query = "SELECT 1 FROM [user] WHERE email = @Email";
         bool check = database.ExecuteScalar<bool>(query, new { Email = email });
 
-        if (check) return false;
-        if (string.IsNullOrWhiteSpace(email)) return false;
+        if (!check) return false;
+
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
 
         // Define a regular expression pattern for a basic email validation
         string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
@@ -58,12 +85,22 @@
     }
     
 
-    private void signup()
+    private void SignUpFunc()
     {
-        if (IsValidEmail(this.email))
+        if (IsValidEmail(_SignUp.email))
         {
-            
+            string query = "INSERT INTO [user] (email, phone, password, admin) VALUES (@Email, @Phone, @Password, @Admin)";
+        
+            // Using Dapper to execute the query with parameterized values
+            database.Execute(query, new { Email = _SignUp.email, Phone = _SignUp.phone, Password = _SignUp.password, Admin = false });
+            js.InvokeVoidAsync("alert", "Conta Criada!");
         }
+        else
+        {
+            error = "Invalid Email";
+        }
+        
+        
     }
-    
+  
 }
