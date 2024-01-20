@@ -18,11 +18,11 @@ INSERT INTO [user] (email, phone, password, admin) VALUES
     ('admin@example.com', NULL, 'hashed_admin_password', 1);
 
 -- Insert seed data for product table
-INSERT INTO product (name, variety_id, stock) VALUES
-                                                  ('Artwork 1', 1, 10),
-                                                  ('Sculpture 1', 2, 5),
-                                                  ('Necklace 1', 3, 20),
-                                                  ('Antique Item 1', 4, 8);
+INSERT INTO product (name, variety_id, stock, url) VALUES
+                                                  ('Artwork 1', 1, 10, 'https://placehold.co/300'),
+                                                  ('Sculpture 1', 2, 5, 'https://placehold.co/300'),
+                                                  ('Necklace 1', 3, 20, 'https://placehold.co/300'),
+                                                  ('Antique Item 1', 4, 8, 'https://placehold.co/300');
 
 -- Insert seed data for auction table
 INSERT INTO auction (auction_type_id, product_id, minimum_value, initial_value, increment, start, [end], current_bid, status) VALUES

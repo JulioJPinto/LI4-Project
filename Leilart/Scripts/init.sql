@@ -39,6 +39,7 @@ CREATE TABLE product (
                          name VARCHAR(100) NOT NULL,
                          variety_id INT NOT NULL,
                          stock INT NOT NULL,
+                         url VARCHAR(100) NOT NULL, 
                          PRIMARY KEY(id),
                          FOREIGN KEY(variety_id) REFERENCES variety(id),
                          UNIQUE(name)
