@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Leilart.Components;
 using Leilart.Data;
 
@@ -8,6 +9,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.
     AddTransient<IDBConnection, DBConnection>();
+builder.Services.
+    AddBlazoredLocalStorage();
+
+
 
 var app = builder.Build();
 

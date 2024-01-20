@@ -1,5 +1,7 @@
 @page "/signup"
 @using Leilart.Components.Layout
+@using System.Runtime.CompilerServices
+@inject Data.IDBConnection database;
 @layout LoginLayout
 
 <div class="flex flex-row">
@@ -9,27 +11,59 @@
     
     <div class="w-full mt-16 mx-16">
         <img src="assets/images/leilart.svg"/>
-        <div class="my-64 justify-items-center">
-            <div class="w-1/2">
-                <h4 class="text-2xl font-semibold my-4">Signup</h4>
-                <div class="font-regular">Email</div>
-                <input class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
-                <div class="font-regular">Password</div>
-                <input class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
-            </div>
-            <div class="mt-8">
-                <PrimaryButton Title="Sign Up" CustomStyle="text-white bg-black"></PrimaryButton>
-            </div>
+        <div class="my-48 justify-items-center">
+            <form @onsubmit="signup">
+                <div class="form-group w-1/2">
+                    <h4 class="text-2xl font-semibold my-4">Signup</h4>
+                    <label for="email" class="font-regular">Email*</label>
+                    <input type="email" id="email" @bind="email" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                    <label for="phone" class="font-regular">Cellphone</label>
+                    <input type="phone" id="phone" @bind="phone" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                    <label for="pass" class="font-regular">Password</label>
+                    <input type="pass" id="pass" @bind="password" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+                </div>
+                <div class="mt-8">
+                    <a type="submit">
+                        <PrimaryButton Title="Sign Up" CustomStyle="text-white bg-black"></PrimaryButton>
+                    </a>
+                </div>
+            </form>
             <div class="mt-1">
                 <p>Already have an Account?</p>
                 <a href="/login">Login</a>
             </div>
-
         </div>
     </div>
-
 </div>
 
 @code {
+    private string email;
+    private string phone;
+    private string password;
+    
+    
+    private bool IsValidEmail(string email)
+    {
+        string query = "SELECT 1 FROM [user] WHERE email = @Email";
+        bool check = database.ExecuteScalar<bool>(query, new { Email = email });
+
+        if (check) return false;
+        if (string.IsNullOrWhiteSpace(email)) return false;
+
+        // Define a regular expression pattern for a basic email validation
+        string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+        // Use Regex.IsMatch to check if the email matches the pattern
+        return Regex.IsMatch(email, pattern);
+    }
+    
+
+    private void signup()
+    {
+        if (IsValidEmail(this.email))
+        {
+            
+        }
+    }
     
 }
