@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Dapper;
 
-public interface IDBConnection : IDisposable
+public interface IDBConnection
 {
     IDbConnection Connection { get; }
 
