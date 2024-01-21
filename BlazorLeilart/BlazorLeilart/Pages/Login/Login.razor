@@ -4,10 +4,8 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @using BlazorLeilart.Authentication
-@using Newtonsoft.Json;
-@inject ProtectedLocalStorage ProtectedLocalStorage
-@inject IJSRuntime js
-@inject Data.IDBConnection database;
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject Data.IDBConnection database
 @layout LoginLayout
 
 <div class="flex flex-row">
@@ -26,7 +24,7 @@
                 <div class="font-regular">Password</div>
                 <input @bind="password" class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
             </div>
-            <div class="mt-8">
+            <div class="mt-8" @onclick="LoginFunc">
                 <PrimaryButton Title="Login" CustomStyle="text-white bg-black"></PrimaryButton>
             </div>
             <div class="mt-1">
@@ -71,19 +69,27 @@
         return count == 0;
         
     }
+    
+    string sessionValue = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        sessionValue = await localStore.GetItemAsync<string>("session");
+    }
 
     private async Task LoginFunc()
     {
         if (!IsValidEmail(this.email))
         {
-            string query = "SELECT * FROM [user] WHERE email = @inputEmail";
-            User user = database.Connection.ExecuteScalar<User>(query, new { inputEmail = email });
+            TokenSession session = null;
+            string query = "SELECT password FROM [user] WHERE email = @inputEmail";
+            string password = database.Connection.ExecuteScalar<string>(query, new { inputEmail = email });
 
-            if (TokenSession.Base64Encode(this.password) == user.Passe)
+            if (TokenSession.Base64Encode(this.password) == password)
             {
-                TokenSession session = new TokenSession(this.email);
-                string json = JsonConvert.SerializeObject(session);
-                await js.InvokeVoidAsync("session", json);
+                session = new TokenSession(this.email);
+                string token = session.getToken();
+                await localStore.SetItemAsync("session", token);
             }
         }
     }

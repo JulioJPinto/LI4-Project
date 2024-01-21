@@ -1,12 +1,23 @@
+using System.Runtime.CompilerServices;
+
 namespace BlazorLeilart.Authentication;
 
 public class TokenSession
 {
-    private string token { get; }
+    private string token;
 
     public TokenSession(string email)
     {
         this.token = Base64Encode(email);
+    }
+ 
+    public string getToken()
+    {
+        return this.token;
+    }
+    public string getDecodedToken()
+    {
+        return Base64Decode(this.token);
     }
     
     public static string Base64Encode(string plainText) 
@@ -25,4 +36,5 @@ public class TokenSession
     {
         return (Base64Decode(this.token) == email);
     }
+    
 }

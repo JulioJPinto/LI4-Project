@@ -1,6 +1,8 @@
 @using BlazorLeilart.Authentication
-@using System.Text.Json;
-@inject IJSRuntime js
+@using Newtonsoft.Json
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject Data.IDBConnection database;
 <nav class= "border-gray-200 border-b-2 border-b-black w-full " >
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -30,7 +32,8 @@
       }
       else
       {
-        <a href="/user"><PrimaryButton Title="Logged In"></PrimaryButton></a>
+        <a href="/user"><PrimaryButton Title="@_session.getDecodedToken()"/></a>
+        <a @onclick="LogOutFunc"><PrimaryButton Title="Sign Out" CustomStyle="bg-black text-white"/></a>
       }
     </div>
   </div>
@@ -39,29 +42,29 @@
 
 @code {
 
-  public static TokenSession _session = null;
-  private bool _isLogedIn = (_session == null);
+  public TokenSession _session = null;
+  public bool _isLogedIn = false;
   
+  protected override async Task OnInitializedAsync()
+      {
+          // Check if there is a session in local storage
+          if (await localStore.ContainKeyAsync("session"))
+          {
+              // Retrieve the session from local storage
+              string token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
+              _session = new TokenSession(token) ;
 
-  private async Task GetAsync()
+              _isLogedIn = true;
+          }
+      }
+
+  
+  private async Task LogOutFunc()
   {
-    if (!await TryGetAsync())
-      _session = null;
+    await localStore.ClearAsync();
+    _session = null;
+    _isLogedIn = false;
   }
-
-  private async Task<bool> TryGetAsync()
-  {
-    bool hasProperty = await this.HasPropertyAsync();
-    if (hasProperty)
-    {
-      string json = await js.InvokeAsync<string>("session");
-      _session = JsonSerializer.Deserialize<TokenSession>(json);
-    }
-    return hasProperty;
-  }
-
-  private async Task<bool> HasPropertyAsync()
-    => await js.InvokeAsync<bool>("session");
   
   private Dictionary<string, string> _navLinks = new Dictionary<string, string>()
   {
