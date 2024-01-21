@@ -36,3 +36,4 @@
 /home/juliojpinto/Personal/College/LI4-Project/BlazorLeilart/BlazorLeilart/obj/Debug/net6.0/ref/BlazorLeilart.dll
 /home/juliojpinto/Personal/College/LI4-Project/BlazorLeilart/BlazorLeilart/bin/Debug/net6.0/Dapper.dll
 /home/juliojpinto/Personal/College/LI4-Project/BlazorLeilart/BlazorLeilart/obj/Debug/net6.0/scopedcss/Shared/LoginLayout.razor.rz.scp.css
+/home/juliojpinto/Personal/College/LI4-Project/BlazorLeilart/BlazorLeilart/bin/Debug/net6.0/Newtonsoft.Json.dll

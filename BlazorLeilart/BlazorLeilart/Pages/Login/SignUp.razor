@@ -1,6 +1,7 @@
 @page "/signup"
 
 @using BlazorLeilart.Shared
+@using BlazorLeilart.Authentication 
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @inject IJSRuntime js
@@ -13,7 +14,7 @@
     </div>
     
     <div class="w-full mt-16 mx-16">
-        <img src="assets/images/leilart.svg"/>
+        <img src="images/leilart.svg"/>
         <div class="my-48 justify-items-center">
             <div>
                 <div class="form-group w-1/2">
@@ -49,11 +50,11 @@
     private string error = "";
 
     [Required] public string email = "";
-    public string phone = "";
+    public string phone = null;
     [Required] public string password = "";
         
 
-    private bool IsValidEmail(string email)
+    public bool IsValidEmail(string email)
     {
         // Check if the email is empty or null
         if (string.IsNullOrWhiteSpace(email))
@@ -69,7 +70,7 @@
         
         // Check if the email already exists in the database
         string query = "SELECT COUNT(*) FROM [user] WHERE email = @inputEmail";
-        int count = database.ExecuteScalar<int>(query, new { inputEmail = email });
+        int count = database.Connection.ExecuteScalar<int>(query, new { inputEmail = email });
         
         // If the count is greater than 0, the email already exists
         return count == 0;
@@ -81,15 +82,11 @@
         if (IsValidEmail(this.email))
         {
             string insertQuery = "INSERT INTO [user] (email, phone, password, admin) VALUES (@Email, @Phone, @Password, @Admin)";
-            int rowsAffected = database.ExecuteScalar<int>(insertQuery, new { Email = this.email, Phone = this.phone, Password = this.password, Admin = false });
+            database.Connection.Execute(insertQuery, new { Email = this.email, Phone = this.phone, Password = TokenSession.Base64Encode(this.password), Admin = false });
 
-            if (rowsAffected > 0)
+            if (!IsValidEmail(email))
             {
                 js.InvokeVoidAsync("alert", "Account created!");
-            }
-            else
-            {
-                js.InvokeVoidAsync("alert", "Failed to create account.");
             }
         }
         else
