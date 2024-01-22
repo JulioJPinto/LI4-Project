@@ -7,12 +7,15 @@ public class Product
     public int IdVariety { get; private set; }
     public int Stock { get; private set; }
     
-    public Product(int id, string name, int categoria, int stock)
+    public string URL { get; private set; }
+    
+    public Product(int id, string name, int categoria, int stock, string url)
     {
         this.Id = id;
         this.name = name;
         this.IdVariety = categoria;
         this.Stock = stock;
+        this.URL = url;
     }
     
     public Product()
@@ -21,5 +24,6 @@ public class Product
         this.name = "Teste";
         this.IdVariety = 2;
         this.Stock = 3;
+        this.URL = "https://placehold.co/600";
     }
 }

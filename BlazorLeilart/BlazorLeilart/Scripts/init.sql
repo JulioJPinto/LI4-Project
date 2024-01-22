@@ -60,7 +60,8 @@ CREATE TABLE auction (
                          status BIT NOT NULL,
                          PRIMARY KEY(id),
                          FOREIGN KEY(auction_type_id) REFERENCES auction_type(id),
-                         FOREIGN KEY(product_id) REFERENCES product(id)
+                         FOREIGN KEY(product_id) REFERENCES product(id),
+                         FOREIGN KEY(current_bid) REFERENCES bidding(id)
 );
 
 -- Create bidding table

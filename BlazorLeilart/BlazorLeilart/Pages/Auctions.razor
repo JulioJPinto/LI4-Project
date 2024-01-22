@@ -1,4 +1,5 @@
-@inject Data.IDBConnection database;
+@inject Data.IDBConnection database
+@using BlazorLeilart.Models.Auction
 
 @page "/auctions"
 
@@ -18,14 +19,22 @@
     else
     {
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
-            @foreach (Product product in _products)
+            @foreach (Auction a in _auctions)
             {
-                <a href="/auction">
+                <a href="/auction/@a.Id">
                     <div class="relative items-center">
-                        <img src="https://placehold.co/300"/>
-                        <h2 class="font-semibold">@product.name</h2>
-                        <h3>@product.IdVariety</h3>
-                        <h2 class="font-semibold text-xl">$@product.Stock</h2>
+                        @if (a.Product != null)
+                        {
+                            <img src="@a.Product.URL"/>
+                            <h2 class="font-semibold">@a.Product.name</h2>
+                            <h3>@a.Product.IdVariety</h3>
+                        }
+                        else
+                        {
+                            <p>No product available</p>
+                        }
+                        
+                        <h2 class="font-semibold text-xl">$@a.ValorInicial</h2>
                     </div>
                 </a>
                 
@@ -36,11 +45,22 @@
 
 @code {
     
-    private List<Product> _products = new List<Product>();
+    private List<Auction> _auctions = new List<Auction>();
     private bool _hasLoadedData = true;
     
     protected override async Task OnInitializedAsync()
     {
-        _products = database.Query<Product>("SELECT * FROM product").ToList();
+        var auctions = await database.Connection.QueryAsync<Auction>("SELECT * FROM auction");
+        _auctions = auctions.AsList();
+        
+        var products = await database.Connection.QueryAsync<Product>("SELECT * FROM product");
+        List<Product> _products = products.AsList();
+        
+        foreach (Auction auction in _auctions)
+        {
+            auction.Product = _products.Find(p => p.Id == auction.IdProduto);
+        }
+
+
     }
 }
