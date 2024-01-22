@@ -1,5 +1,10 @@
-@page "/user"
+@page "/user/{token}"
+
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject Data.IDBConnection database
+
 @using BlazorLeilart.Shared
+@using BlazorLeilart.Authentication
 @layout MainLayout
 
 
@@ -15,7 +20,7 @@
                         @_user.Email
                     </div>
                     <div class="text-lg font-regular">
-                        +351 @_user.Telefone;
+                        +351 @_user.Phone;
                     </div>
                 </div>
                 <a class="mx-64">
@@ -61,6 +66,8 @@
 </div>
 
 @code {
+
+    [Parameter] public string token { get; set; }
     private User _user = new User();
     
     
@@ -69,10 +76,12 @@
     
     protected override async Task OnInitializedAsync()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            _products.Add(new Product());
-        }
+        string decodedToken = TokenSession.Base64Decode(token);
+        
+        var query = @"SELECT * FROM [User] WHERE Email = @Email";
+        var parameters = new { Email = decodedToken };
+
+        _user = await database.Connection.QueryFirstOrDefaultAsync<User>(query, parameters);
     }
     
 }

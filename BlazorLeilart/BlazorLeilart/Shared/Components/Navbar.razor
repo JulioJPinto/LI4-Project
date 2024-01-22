@@ -1,6 +1,7 @@
 @using BlazorLeilart.Authentication
 @using Newtonsoft.Json
 @using JsonSerializer = System.Text.Json.JsonSerializer
+@inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStore
 @inject Data.IDBConnection database;
 <nav class= "border-gray-200 border-b-2 border-b-black w-full " >
@@ -32,7 +33,7 @@
       }
       else
       {
-        <a href="/user"><PrimaryButton Title="@_session.getDecodedToken()"/></a>
+        <a href="/user/@_session.getToken()"><PrimaryButton Title="@_session.getDecodedToken()"/></a>
         <a @onclick="LogOutFunc"><PrimaryButton Title="Sign Out" CustomStyle="bg-black text-white"/></a>
       }
     </div>
@@ -64,6 +65,7 @@
     await localStore.ClearAsync();
     _session = null;
     _isLogedIn = false;
+    NavigationManager.NavigateTo("/");
   }
   
   private Dictionary<string, string> _navLinks = new Dictionary<string, string>()
