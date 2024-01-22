@@ -13,9 +13,9 @@
         <div class="mt-8">
             <h2 class="text-6xl font-bold">@product.name</h2>
             <div class="mt-8 py-4 px-16 rounded-lg border-2">
-                <div class="text-6xl font-semibold text-center  ">@auction.ValorInicial</div>
+                <div class="text-6xl font-semibold text-center  ">@auction.initial_value</div>
             </div>
-            <div class="mt-2 text-md font-regular">Increments: @auction.ValorMinimo</div>
+            <div class="mt-2 text-md font-regular">Increments: @auction.minimum_value</div>
             <div class="mt-64 flex flex-row">
                 <PrimaryButton Title="Bid"/>
                 <input class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">  
@@ -39,20 +39,15 @@
     protected override async Task OnInitializedAsync()
     {
         
-        var query = @"SELECT * FROM auction WHERE Id = @auctionid";
-        var parameters = new { auctionid };
+        var query1 = @"SELECT * FROM auction WHERE Id = @auctionid";
+        var parameters1 = new { auctionid };
 
-        auction = await database.Connection.QueryFirstOrDefaultAsync<Auction>(query, parameters);
+        auction = await database.Connection.QueryFirstOrDefaultAsync<Auction>(query1, parameters1);
         
-        query = @"
-                SELECT p.*
-                FROM auction a
-                INNER JOIN product p ON a.IdProduto = p.Id
-                WHERE a.Id = @auctionid";
+        var query2 = @"SELECT p.* FROM auction a INNER JOIN product p ON a.IdProduto = p.Id WHERE a.Id = @auctionid";
+        var parameters2 = new { auctionid };
 
-        parameters = new { auctionid };
-
-        product = await database.Connection.QueryFirstOrDefaultAsync<Product>(query, parameters);
+        product = await database.Connection.QueryFirstOrDefaultAsync<Product>(query2, parameters2);
         
         
     }

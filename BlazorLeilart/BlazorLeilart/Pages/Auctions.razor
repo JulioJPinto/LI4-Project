@@ -21,20 +21,20 @@
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
             @foreach (Auction a in _auctions)
             {
-                <a href="/auction/@a.Id">
+                <a href="/auction/@a.id">
                     <div class="relative items-center">
                         @if (a.Product != null)
                         {
-                            <img src="@a.Product.URL"/>
+                            <img src="@a.Product.url"/>
                             <h2 class="font-semibold">@a.Product.name</h2>
-                            <h3>@a.Product.IdVariety</h3>
+                            <h3>@a.Product.variety_id</h3>
                         }
                         else
                         {
                             <p>No product available</p>
                         }
                         
-                        <h2 class="font-semibold text-xl">$@a.ValorInicial</h2>
+                        <h2 class="font-semibold text-xl">$@a.initial_value</h2>
                     </div>
                 </a>
                 
@@ -48,6 +48,8 @@
     private List<Auction> _auctions = new List<Auction>();
     private bool _hasLoadedData = true;
     
+    
+    
     protected override async Task OnInitializedAsync()
     {
         var auctions = await database.Connection.QueryAsync<Auction>("SELECT * FROM auction");
@@ -58,7 +60,7 @@
         
         foreach (Auction auction in _auctions)
         {
-            auction.Product = _products.Find(p => p.Id == auction.IdProduto);
+            auction.Product = _products.Find(p => p.id == auction.product_id);
         }
 
 
