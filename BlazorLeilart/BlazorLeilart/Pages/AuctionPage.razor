@@ -1,5 +1,6 @@
 @inject Data.IDBConnection database
 @inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject NavigationManager NavigationManager
 @using BlazorLeilart.Authentication
 @page "/auction/{auctionid}"
 
@@ -58,6 +59,7 @@ else
     public string auctionid { get; set; }
     public bool _loading = false;
     public int _bid;
+    public int user_id = -1;
     public string error;
 
     public Auction auction;
@@ -83,36 +85,46 @@ else
         bids = (await database.Connection.QueryAsync<Bidding>(query3, parameter3)).ToList();
         auction.Bids = bids;
         
+        string token;
+
+        if (await localStore.ContainKeyAsync("session"))
+        {
+            
+            // Retrieve the session from local storage
+            token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
+            string query = "SELECT id FROM [user] WHERE email = @inputEmail";
+            user_id = database.Connection.ExecuteScalar<int>(query, new { inputEmail = token });
+                
+        }
+        
         _loading = true;
     }
 
     private async Task BidFunc()
     
     {
-        if (_bid < bids.Last().value + auction.increment)
+        Console.WriteLine(user_id);
+        if (user_id == -1)
         {
-            error = "Invalid Amount";
+            NavigationManager.NavigateTo("/login");
         }
         else
         {
-            string token, password;
-            int user_id = -1;
-            
-            if (await localStore.ContainKeyAsync("session"))
+            if (_bid < bids.Last().value + auction.increment)
             {
-                // Retrieve the session from local storage
-                token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
-                string query = "SELECT id FROM [user] WHERE email = @inputEmail";
-                user_id = database.Connection.ExecuteScalar<int>(query, new { inputEmail = token });
-                
+                error = "Invalid Amount";
             }
+            else
+            {
             
-            Bidding current_bid = new Bidding(_bid, auction.id, user_id);
-            Console.WriteLine(user_id);
+                Bidding current_bid = new Bidding(_bid, auction.id, user_id);
+                Console.WriteLine(user_id);
             
-            string insertQuery = "INSERT INTO Bidding (value, time, auction_id, user_id) VALUES (@value, @time, @auction_id, @user_id)";
-            database.Connection.Execute(insertQuery, current_bid);
+                string insertQuery = "INSERT INTO Bidding (value, time, auction_id, user_id) VALUES (@value, @time, @auction_id, @user_id)";
+                database.Connection.Execute(insertQuery, current_bid);
             
+            }
         }
+        
     }
 }
