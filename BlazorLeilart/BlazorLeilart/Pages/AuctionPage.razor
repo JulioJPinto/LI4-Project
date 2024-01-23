@@ -1,4 +1,6 @@
 @inject Data.IDBConnection database
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@using BlazorLeilart.Authentication
 @page "/auction/{auctionid}"
 
 @if (!_loading)
@@ -39,8 +41,12 @@ else
                   <a @onclick="BidFunc">
                       <PrimaryButton Title="Bid"/>
                   </a>
-                  <input class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
+                  <input @bind="_bid" class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
               </div>
+              @if (error != "")
+              {
+                  <p class="text-md my-2 text-red-500">@error</p>
+              }
           </div>
       </div>
   </div>
@@ -51,7 +57,8 @@ else
     [Parameter]
     public string auctionid { get; set; }
     public bool _loading = false;
-    public double _bid;
+    public int _bid;
+    public string error;
 
     public Auction auction;
     public Product product;
@@ -73,17 +80,44 @@ else
         var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid";
         var parameter3 = new { auctionid };
         
-        bids = database.Query<Bidding>(query3, parameter3).ToList();
-        bids.Sort(new Bidding.BiddingComparer());
-
+        bids = (await database.Connection.QueryAsync<Bidding>(query3, parameter3)).ToList();
+        bids.Sort((x, y) => x.value.CompareTo(y.value));
         auction.Bids = bids;
-        
         
         _loading = true;
     }
 
     private async Task BidFunc()
+    
     {
-        
+        if (_bid < bids.Last().value + 100)
+        {
+            error = "Invalid Amount";
+        }
+        else
+        {
+            string token, password;
+            int user_id = -1;
+            
+            if (await localStore.ContainKeyAsync("session"))
+            {
+                // Retrieve the session from local storage
+                token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
+                string query = "SELECT id FROM [user] WHERE email = @inputEmail";
+                user_id = database.Connection.ExecuteScalar<int>(query, new { inputEmail = token });
+                
+            }
+            
+            Bidding current_bid = new Bidding(_bid, auction.id, user_id);
+            bids.Add(current_bid);
+            
+            string insertQuery = "INSERT INTO Bidding (value, time, auction_id, user_id) VALUES (@value, @time, @auction_id, @user_id)";
+            database.Connection.Execute(insertQuery, current_bid);
+            
+            var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid";
+            var parameter3 = new { auctionid };
+            
+            
+        }
     }
 }

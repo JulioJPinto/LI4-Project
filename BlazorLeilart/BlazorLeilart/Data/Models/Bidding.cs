@@ -18,6 +18,15 @@ public class Bidding
         this.user_id = id_user;
     }
     
+    public Bidding(int value, int id_leilao, int id_user)
+    {
+        this.Id = -1;
+        this.value = value;
+        this.time = DateTime.Now;
+        this.auction_id = id_leilao;
+        this.user_id = id_user;
+    }
+    
     public Bidding()
     {
         this.Id = -1;
