@@ -1,4 +1,6 @@
 @inject Data.IDBConnection database
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@using BlazorLeilart.Authentication
 @page "/auction/{auctionid}"
 
 @if (!_loading)
@@ -21,13 +23,30 @@ else
           <div class="mt-8">
               <h2 class="text-6xl font-bold">@product.name</h2>
               <div class="mt-8 py-4 px-16 rounded-lg border-2">
-                  <div class="text-6xl font-semibold text-center  ">@auction.initial_value.00 €</div>
+                  
+                  <div class="text-6xl font-semibold text-center  ">
+                      @if (bids.Count == 0)
+                      {
+                          <p>@auction.initial_value.00 €</p>
+                      }
+                      else
+                      {     
+                          <p>@bids.Last().value.00 €</p>
+                      } 
+                      
+                  </div>
               </div>
               <div class="mt-2 text-md font-regular">Increments: @auction.minimum_value.00 €</div>
               <div class="mt-64 flex flex-row">
-                  <PrimaryButton Title="Bid"/>
+                  <a @onclick="BidFunc">
+                      <PrimaryButton Title="Bid"/>
+                  </a>
                   <input @bind="_bid" class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
               </div>
+              @if (error != "")
+              {
+                  <p class="text-md my-2 text-red-500">@error</p>
+              }
           </div>
       </div>
   </div>
@@ -38,10 +57,12 @@ else
     [Parameter]
     public string auctionid { get; set; }
     public bool _loading = false;
-    public double _bid;
+    public int _bid;
+    public string error;
 
     public Auction auction;
     public Product product;
+    public List<Bidding> bids;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,12 +76,48 @@ else
         var parameters2 = new { idp };
         
         product = await database.Connection.QueryFirstOrDefaultAsync<Product>(query2, parameters2) ?? new Product();
-
+        
+        var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid";
+        var parameter3 = new { auctionid };
+        
+        bids = (await database.Connection.QueryAsync<Bidding>(query3, parameter3)).ToList();
+        bids.Sort((x, y) => x.value.CompareTo(y.value));
+        auction.Bids = bids;
+        
         _loading = true;
     }
 
-    public async Task BidFunc()
+    private async Task BidFunc()
+    
     {
-        
+        if (_bid < bids.Last().value + 100)
+        {
+            error = "Invalid Amount";
+        }
+        else
+        {
+            string token, password;
+            int user_id = -1;
+            
+            if (await localStore.ContainKeyAsync("session"))
+            {
+                // Retrieve the session from local storage
+                token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
+                string query = "SELECT id FROM [user] WHERE email = @inputEmail";
+                user_id = database.Connection.ExecuteScalar<int>(query, new { inputEmail = token });
+                
+            }
+            
+            Bidding current_bid = new Bidding(_bid, auction.id, user_id);
+            bids.Add(current_bid);
+            
+            string insertQuery = "INSERT INTO Bidding (value, time, auction_id, user_id) VALUES (@value, @time, @auction_id, @user_id)";
+            database.Connection.Execute(insertQuery, current_bid);
+            
+            var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid";
+            var parameter3 = new { auctionid };
+            
+            
+        }
     }
 }

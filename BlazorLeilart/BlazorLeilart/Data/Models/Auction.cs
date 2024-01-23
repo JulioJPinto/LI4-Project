@@ -18,6 +18,8 @@ public class Auction
     public bool status { get; private set; }
     
     public Product Product { get; set; }
+    
+    public List<Bidding.Bidding> Bids { get; set; }
 
     public Auction(int id, int auctionTypeId, int productId, int? minimumValue, int? initialValue, int? increment, DateTime start, DateTime end, int? currentBid, bool status)
     {
@@ -32,6 +34,7 @@ public class Auction
         this.current_bid = currentBid;
         this.status = status;
         this.Product = null;
+        this.Bids = new List<Bidding.Bidding>();
     }
 
 
@@ -48,6 +51,7 @@ public class Auction
         this.current_bid = -1;
         this.status = false;
         this.Product = null;
+        this.Bids = new List<Bidding.Bidding>();
     }
     
 
