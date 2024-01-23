@@ -77,11 +77,10 @@ else
         
         product = await database.Connection.QueryFirstOrDefaultAsync<Product>(query2, parameters2) ?? new Product();
         
-        var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid";
+        var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid ORDER BY value ASC;";
         var parameter3 = new { auctionid };
         
         bids = (await database.Connection.QueryAsync<Bidding>(query3, parameter3)).ToList();
-        bids.Sort((x, y) => x.value.CompareTo(y.value));
         auction.Bids = bids;
         
         _loading = true;
@@ -90,7 +89,7 @@ else
     private async Task BidFunc()
     
     {
-        if (_bid < bids.Last().value + 100)
+        if (_bid < bids.Last().value + auction.increment)
         {
             error = "Invalid Amount";
         }
@@ -109,14 +108,10 @@ else
             }
             
             Bidding current_bid = new Bidding(_bid, auction.id, user_id);
-            bids.Add(current_bid);
+            Console.WriteLine(user_id);
             
             string insertQuery = "INSERT INTO Bidding (value, time, auction_id, user_id) VALUES (@value, @time, @auction_id, @user_id)";
             database.Connection.Execute(insertQuery, current_bid);
-            
-            var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid";
-            var parameter3 = new { auctionid };
-            
             
         }
     }
