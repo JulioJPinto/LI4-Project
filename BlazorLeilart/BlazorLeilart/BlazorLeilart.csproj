@@ -10,6 +10,7 @@
       <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
       <PackageReference Include="Dapper" Version="2.1.28" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="PlantUml.Net" Version="1.4.80" />
       <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
       <PackageReference Include="Tailwind.Extensions.AspNetCore" Version="1.1.0-beta1" />
     </ItemGroup>

@@ -50,6 +50,10 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
+            "PlantUml.Net": {
+              "target": "Package",
+              "version": "[1.4.80, )"
+            },
             "System.Data.SqlClient": {
               "target": "Package",
               "version": "[4.8.6, )"

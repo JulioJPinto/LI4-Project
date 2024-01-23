@@ -29,7 +29,7 @@ CREATE TABLE [user] (
     email VARCHAR(200) NOT NULL,
     phone INT,
     password VARCHAR(128) NOT NULL,
-    admin BIT NOT NULL,
+    admin BIT NOT NULL,A
     PRIMARY KEY(id),
     UNIQUE(email)
     );
