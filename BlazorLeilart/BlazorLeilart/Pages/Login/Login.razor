@@ -1,0 +1,101 @@
+@page "/login"
+
+@using BlazorLeilart.Shared
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@using BlazorLeilart.Authentication
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+@inject Data.IDBConnection database
+@layout LoginLayout
+
+<div class="flex flex-row">
+    <div class="w-full mt-16 mx-16">
+        <img src="images/leilart.svg"/>
+        <div class="my-64 justify-items-center">
+            <div class="w-1/2">
+                <h4 class="text-2xl font-semibold my-4">Login</h4>
+                <div class="font-regular">Email</div>
+                <input @bind="email" class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
+                @if (error != "")
+                {
+                    <p class="text-md text-red-500">@error</p>
+                }
+                
+                <div class="font-regular">Password</div>
+                <input @bind="password" class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
+            </div>
+            <div class="mt-8" @onclick="LoginFunc">
+                <PrimaryButton Title="Login" CustomStyle="text-white bg-black"></PrimaryButton>
+            </div>
+            <div class="mt-1">
+                <p>Don't have an Account?</p> 
+                <a href="/signup">Sign Up</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="w-full justify-items-stretch">
+        <img src="https://placehold.co/1000"/>
+    </div>
+</div>
+
+@code {
+
+    
+    private string error = "";
+
+    [Required] public string email = "";
+    [Required] public string password = "";
+        
+
+    public bool IsValidEmail(string email)
+    {
+        // Check if the email is empty or null
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+    
+        // Define a regular expression pattern for basic email validation
+        string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        bool isEmailValid = Regex.IsMatch(email, pattern);
+    
+        // If the email format is not valid, return false
+        if (!isEmailValid)
+            return false;
+        
+        // Check if the email already exists in the database
+        string query = "SELECT COUNT(*) FROM [user] WHERE email = @inputEmail";
+        int count = database.Connection.ExecuteScalar<int>(query, new { inputEmail = email });
+        
+        // If the count is greater than 0, the email already exists
+        return count == 0;
+        
+    }
+    
+    string sessionValue = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        sessionValue = await localStore.GetItemAsync<string>("session");
+    }
+
+    private async Task LoginFunc()
+    {
+        if (!IsValidEmail(this.email))
+        {
+            TokenSession session = null;
+            string query = "SELECT password FROM [user] WHERE email = @inputEmail";
+            string password = database.Connection.ExecuteScalar<string>(query, new { inputEmail = email });
+
+            if (TokenSession.Base64Encode(this.password) == password)
+            {
+                session = new TokenSession(this.email);
+                string token = session.getToken();
+                await localStore.SetItemAsync("session", token);
+                NavigationManager.NavigateTo("/user/" + token);
+            }
+        }
+    }
+    
+    
+}

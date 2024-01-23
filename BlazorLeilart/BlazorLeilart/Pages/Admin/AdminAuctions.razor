@@ -1,0 +1,63 @@
+@page "/admin/auctions"
+@using BlazorLeilart.Shared
+@layout AdminLayout
+
+<div class="w-full px-16 pt-14">
+    <div class="py-8">
+        <div class="text-sm font-regular my-2" >Auctions</div>
+        <div class="text-3xl font-bold">On going</div>
+        <div class="grid grid-cols-4 gap-8 pt-12 relative">
+            @foreach (Product product in _products)
+            {
+                <a href="/auction">   
+                    <div class="relative items-center">
+                        <img src="https://placehold.co/300"/>
+                        <h2 class="font-semibold">@product.name</h2>
+                        <h3>@product.variant</h3>
+                        <h2 class="font-semibold text-xl">$@product.price</h2>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+    <div class="py-8">
+        <div class="text-sm font-regular my-2" >Auctions</div>
+        <div class="text-3xl font-bold">Recently Finished</div>
+        <div class="grid grid-cols-4 gap-8 pt-12 relative">
+            @foreach (Product product in _products)
+            {
+                <a href="/auction">   
+                    <div class="relative items-center">
+                        <img src="https://placehold.co/300"/>
+                        <h2 class="font-semibold">@product.name</h2>
+                        <h3>@product.variant</h3>
+                        <h2 class="font-semibold text-xl">$@product.price</h2>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    class Product
+    {
+        public string name;
+        public string variant;
+        public int price;
+        public string photo_url;
+    }
+    
+    private List<Product> _products = new List<Product>();
+    private bool _hasLoadedData = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            _products.Add(new Product(){name = "Product name", price = 10, variant = "Variant"});
+        }
+    }
+    
+}

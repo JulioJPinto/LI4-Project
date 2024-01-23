@@ -1,0 +1,22 @@
+<div class="my-8 py-8 px-8 border-t-2 border-t-grey">
+    <div class="grid grid-cols-4 justify-items-center">
+        @foreach (KeyValuePair<string, string> link in _navLinks)
+        {
+            <li class="flex items-center">
+                <a href="@link.Value" class="font-normal block py-2 px-3 text-black rounded md:bg-transparent md:text-black md:p-0" aria-current="page">@link.Key</a>
+            </li>
+        }
+    </div>
+</div>
+
+@code {
+
+    private Dictionary<string, string> _navLinks = new Dictionary<string, string>()
+    {
+        {"Contact", "/"},
+        {"About Us", "/about"},
+        {"Team", "/team"},
+        {"ToS", "/tos"}
+    };
+
+}
