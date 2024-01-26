@@ -1,12 +1,12 @@
 @page "/login"
 
-@using BlazorLeilart.Shared
+@using BlazorLeilart.Data.Interfaces.Users
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @using BlazorLeilart.Authentication
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStore
-@inject Data.IDBConnection database
+@inject Data.Interfaces.IUser usertable
 @layout LoginLayout
 
 <div class="flex flex-row">
@@ -44,12 +44,13 @@
 
     
     private string error = "";
+    
 
     [Required] public string email = "";
     [Required] public string password = "";
         
 
-    public bool IsValidEmail(string email)
+    public async Task<bool> IsValidEmail(string email)
     {
         // Check if the email is empty or null
         if (string.IsNullOrWhiteSpace(email))
@@ -64,8 +65,7 @@
             return false;
         
         // Check if the email already exists in the database
-        string query = "SELECT COUNT(*) FROM [user] WHERE email = @inputEmail";
-        int count = database.Connection.ExecuteScalar<int>(query, new { inputEmail = email });
+        int count = await usertable.ContainsKeyAsync(email);
         
         // If the count is greater than 0, the email already exists
         return count == 0;
@@ -81,15 +81,16 @@
 
     private async Task LoginFunc()
     {
-        if (!IsValidEmail(this.email))
+        bool validity = await IsValidEmail(this.email);
+        if (!validity)
         {
             TokenSession session = null;
-            string query = "SELECT password FROM [user] WHERE email = @inputEmail";
-            string password = database.Connection.ExecuteScalar<string>(query, new { inputEmail = email });
+            User user = await usertable.GetUserByEmailAsync(email);
+            string userPassword = user.Password; 
 
-            if (TokenSession.Base64Encode(this.password) == password)
+            if (TokenSession.Base64Encode(password) == userPassword)
             {
-                session = new TokenSession(this.email);
+                session = new TokenSession(user.Email);
                 string token = session.getToken();
                 await localStore.SetItemAsync("session", token);
                 NavigationManager.NavigateTo("/user/" + token);
@@ -97,8 +98,10 @@
         }
         else
         {
-            error = "Invalid Email";
-        }
+            if(!validity) error = "Invalid Email";
+            if (password == "") error = "Invalid Password";
+        }   
+            
     }
     
     

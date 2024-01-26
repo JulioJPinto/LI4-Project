@@ -5,7 +5,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @inject IJSRuntime js
-@inject Data.IDBConnection database;
+@inject Data.Interfaces.IUser database;
 @layout LoginLayout
 
 <div class="flex flex-row">
@@ -50,11 +50,11 @@
     private string error = "";
 
     [Required] public string email = "";
-    public string phone = null;
+    public string phone = "";
     [Required] public string password = "";
         
 
-    public bool IsValidEmail(string email)
+    public async Task<bool> IsValidEmail(string email)
     {
         // Check if the email is empty or null
         if (string.IsNullOrWhiteSpace(email))
@@ -69,29 +69,29 @@
             return false;
         
         // Check if the email already exists in the database
-        string query = "SELECT COUNT(*) FROM [user] WHERE email = @inputEmail";
-        int count = database.Connection.ExecuteScalar<int>(query, new { inputEmail = email });
+        int count = await database.ContainsKeyAsync(email);
         
         // If the count is greater than 0, the email already exists
         return count == 0;
         
     }
     
-    private void SignUpFunc()
+    private async Task SignUpFunc()
     {
-        if (IsValidEmail(this.email))
+        bool result = await IsValidEmail(email);
+        if (result)
         {
-            string insertQuery = "INSERT INTO [user] (email, phone, password, admin) VALUES (@Email, @Phone, @Password, @Admin)";
-            database.Connection.Execute(insertQuery, new { Email = this.email, Phone = this.phone, Password = TokenSession.Base64Encode(this.password), Admin = false });
+            User user = new User(email, phone, password, false);
+            bool user_insert = await database.PutUserAsync(user);
 
-            if (!IsValidEmail(email))
+            if (user_insert)
             {
                 js.InvokeVoidAsync("alert", "Account created!");
             }
         }
         else
         {
-            error = "Invalid Email";
+            if (result) error = "Invalid Email";
         }
         
         

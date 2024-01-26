@@ -1,10 +1,7 @@
 @page "/user/{token}"
-
-@inject Blazored.LocalStorage.ILocalStorageService localStore
-@inject Data.IDBConnection database
-
-@using BlazorLeilart.Shared
 @using BlazorLeilart.Authentication
+@inject Data.Interfaces.IUser database;
+
 @layout MainLayout
 
 
@@ -77,11 +74,8 @@
     protected override async Task OnInitializedAsync()
     {
         string decodedToken = TokenSession.Base64Decode(token);
-        
-        var query = @"SELECT * FROM [User] WHERE Email = @Email";
-        var parameters = new { Email = decodedToken };
 
-        _user = await database.Connection.QueryFirstOrDefaultAsync<User>(query, parameters);
+        _user = await database.GetUserByEmailAsync(decodedToken);
     }
     
 }

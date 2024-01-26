@@ -23,7 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\DL\" />
+      <Compile Remove="Data\DL\IUsers.cs" />
+      <Compile Remove="Data\DL\UserTable.cs" />
     </ItemGroup>
 
 </Project>
