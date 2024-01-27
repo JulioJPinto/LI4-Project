@@ -2,7 +2,9 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using BlazorLeilart.Data;
+using BlazorLeilart.Data.DL;
 using BlazorLeilart.Data.Interfaces;
+using BlazorLeilart.Data.Interfaces.Auctions;
 using BlazorLeilart.Data.Interfaces.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<IDBConnection, DBConnection>();
 builder.Services.AddScoped<IUser, UserImp>();
+builder.Services.AddScoped<IBiddings, BiddingImp>();
+builder.Services.AddScoped<IProduct, ProductImp>();
+builder.Services.AddScoped<IAuction, AuctionImp>();
 builder.Services.AddBlazoredLocalStorage();
 
 

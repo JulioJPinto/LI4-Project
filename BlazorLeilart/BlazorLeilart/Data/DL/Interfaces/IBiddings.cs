@@ -1,6 +1,6 @@
 using BlazorLeilart.Models.Bidding;
 
-namespace BlazorLeilart.Data.DL.Interfaces;
+namespace BlazorLeilart.Data.Interfaces;
 
 public interface IBiddings
 {
@@ -10,4 +10,5 @@ public interface IBiddings
     Task<bool> RemoveBiddingByIdAsync(string id);
     Task<bool> UpdateBidding(Bidding bidding);
     Task<List<Bidding>> GetAllBiddingsAsync();
+    Task<List<Bidding>> GetAllBiddingsFilteredbyAuctionAsync(string id);
 }

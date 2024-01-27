@@ -17,17 +17,16 @@
                 <h4 class="text-2xl font-semibold my-4">Login</h4>
                 <div class="font-regular">Email</div>
                 <input @bind="email" class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
-                @if (error != "")
-                {
-                    <p class="text-md text-red-500">@error</p>
-                }
-                
                 <div class="font-regular">Password</div>
-                <input @bind="password" class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
+                <input @bind="password" type="password" class="border-2 py-2 px-4 border-black rounded-sm w-full"/>
             </div>
             <div class="mt-8" @onclick="LoginFunc">
                 <PrimaryButton Title="Login" CustomStyle="text-white bg-black"></PrimaryButton>
             </div>
+            @if (error != "")
+            {
+                <p class="text-md text-red-500">@error</p>
+            }
             <div class="mt-1">
                 <p>Don't have an Account?</p> 
                 <a href="/signup">Sign Up</a>
@@ -71,6 +70,11 @@
         return count == 0;
         
     }
+
+    public async Task<bool> IsValidPassword(string password)
+    {
+        return password != null && password != "" && password.Length > 0;
+    }
     
     string sessionValue = "";
     
@@ -81,7 +85,7 @@
 
     private async Task LoginFunc()
     {
-        bool validity = await IsValidEmail(this.email);
+        bool validity = await IsValidEmail(this.email) && await IsValidPassword(this.password);
         if (!validity)
         {
             TokenSession session = null;
@@ -98,9 +102,11 @@
         }
         else
         {
-            if(!validity) error = "Invalid Email";
-            if (password == "") error = "Invalid Password";
-        }   
+            if (await IsValidEmail(email)) error = "Invalid Email";
+            if (await IsValidPassword(password)) error = "Invalid Password";
+        }
+
+    } 
             
     }
     

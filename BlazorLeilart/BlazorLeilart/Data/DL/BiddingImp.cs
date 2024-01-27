@@ -1,8 +1,5 @@
 using BlazorLeilart.Models.Bidding;
 using Dapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BlazorLeilart.Data.DL.Interfaces;
 
 namespace BlazorLeilart.Data.Interfaces.Auctions
 {
@@ -86,7 +83,12 @@ namespace BlazorLeilart.Data.Interfaces.Auctions
 
         public async Task<List<Bidding>> GetAllBiddingsAsync()
         {
-            return (await _dbConnection.Connection.QueryAsync<Bidding>("SELECT * FROM [bidding]")).AsList();
+            return (await _dbConnection.Connection.QueryAsync<Bidding>("SELECT * FROM [bidding] ORDER BY value ASC")).AsList();
+        }
+
+        public async Task<List<Bidding>> GetAllBiddingsFilteredbyAuctionAsync(string auctionid)
+        {
+            return (await _dbConnection.Connection.QueryAsync<Bidding>("SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = auctionid })).ToList();
         }
     }
 }

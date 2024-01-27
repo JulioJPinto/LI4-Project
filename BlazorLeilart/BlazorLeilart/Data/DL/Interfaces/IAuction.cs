@@ -1,7 +1,6 @@
 using BlazorLeilart.Models.Auction;
-using BlazorLeilart.Models.Products;
 
-namespace BlazorLeilart.Data.Interfaces.Auctions;
+namespace BlazorLeilart.Data.Interfaces;
 
 public interface IAuction
 {
@@ -11,5 +10,7 @@ public interface IAuction
     Task<bool> RemoveAuctionByIdAsync(string id);
     Task<bool> UpdateAuction(Auction auction);
     Task<List<Auction>> GetAllAuctionsAsync();
+
+    Task UpdateAuctionBids(Auction auction);
 }
 

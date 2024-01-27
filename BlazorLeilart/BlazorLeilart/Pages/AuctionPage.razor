@@ -1,7 +1,10 @@
-@inject Data.IDBConnection database
 @inject Blazored.LocalStorage.ILocalStorageService localStore
 @inject NavigationManager NavigationManager
 @using BlazorLeilart.Authentication
+@inject Data.Interfaces.IAuction auctiondb
+@inject Data.Interfaces.IProduct productbd
+@inject Data.Interfaces.IBiddings bidsdb
+@inject Data.Interfaces.IUser userdb
 @page "/auction/{auctionid}"
 
 @if (!_loading)
@@ -22,17 +25,17 @@ else
               </div>
           </div>
           <div class="mt-8">
-              <h2 class="text-6xl font-bold">@product.name</h2>
+              <h2 class="text-6xl font-bold">@auction.Product.name</h2>
               <div class="mt-8 py-4 px-16 rounded-lg border-2">
                   
                   <div class="text-6xl font-semibold text-center  ">
-                      @if (bids.Count == 0)
+                      @if (auction.Bids.Count == 0)
                       {
                           <p>@auction.initial_value.00 €</p>
                       }
                       else
                       {     
-                          <p>@bids.Last().value.00 €</p>
+                          <p>@auction.Bids.Last().value.00 €</p>
                       } 
                       
                   </div>
@@ -63,38 +66,17 @@ else
     public string error;
 
     public Auction auction;
-    public Product product;
-    public List<Bidding> bids;
 
     protected override async Task OnInitializedAsync()
     {
-        var query1 = @"SELECT * FROM auction WHERE id = @auctionid";
-        var parameters1 = new { auctionid };
-
-        auction = await database.Connection.QueryFirstAsync<Auction>(query1, parameters1);
-
-        var query2 = @"SELECT * FROM product WHERE id = @idp";
-        int idp = auction.product_id;
-        var parameters2 = new { idp };
+        auction = await auctiondb.GetAuctionbyIdAsync(auctionid);
+        auction.Product = await productbd.GetProductByIdAsync(auction.product_id.ToString());
         
-        product = await database.Connection.QueryFirstOrDefaultAsync<Product>(query2, parameters2) ?? new Product();
-        
-        var query3 = @"SELECT * FROM bidding WHERE auction_id = @auctionid ORDER BY value ASC;";
-        var parameter3 = new { auctionid };
-        
-        bids = (await database.Connection.QueryAsync<Bidding>(query3, parameter3)).ToList();
-        auction.Bids = bids;
-        
-        string token;
-
         if (await localStore.ContainKeyAsync("session"))
         {
-            
             // Retrieve the session from local storage
-            token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
-            string query = "SELECT id FROM [user] WHERE email = @inputEmail";
-            user_id = database.Connection.ExecuteScalar<int>(query, new { inputEmail = token });
-                
+            string token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
+            user_id = (await userdb.GetUserByEmailAsync(token)).Id;
         }
         
         _loading = true;
@@ -110,7 +92,7 @@ else
         }
         else
         {
-            if (_bid < bids.Last().value + auction.increment)
+            if (_bid < auction.Bids.Last().value + auction.increment)
             {
                 error = "Invalid Amount";
             }
@@ -118,11 +100,10 @@ else
             {
             
                 Bidding current_bid = new Bidding(_bid, auction.id, user_id);
-                Console.WriteLine(user_id);
-            
-                string insertQuery = "INSERT INTO Bidding (value, time, auction_id, user_id) VALUES (@value, @time, @auction_id, @user_id)";
-                database.Connection.Execute(insertQuery, current_bid);
-            
+
+                bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);
+                await auctiondb.UpdateAuctionBids(auction);
+                NavigationManager.NavigateTo("/auction/" + auctionid );
             }
         }
         
