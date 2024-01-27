@@ -33,9 +33,11 @@
                                 <p>No product available</p>
                             }
                         
-                            @if (a.Bids.Count == 0)
+                            @if (a.Bids.Count != 0)
                             {
-                                <h2 class="font-semibold"> Starting Value: $@a.Bids.Last().value</h2>
+                                <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
+                            } else {
+                                <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
                             }
                             
                         </div>

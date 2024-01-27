@@ -71,6 +71,7 @@ else
     {
         auction = await auctiondb.GetAuctionbyIdAsync(auctionid);
         auction.Product = await productbd.GetProductByIdAsync(auction.product_id.ToString());
+        auction.Bids = await bidsdb.GetAllBiddingsFilteredbyAuctionAsync(auctionid);
         
         if (await localStore.ContainKeyAsync("session"))
         {
@@ -82,7 +83,16 @@ else
         _loading = true;
     }
 
-    private async Task BidFunc()
+    private async Task insertDB()
+    {
+        Bidding current_bid = new Bidding(_bid, auction.id, user_id);
+
+        bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);
+        await auctiondb.UpdateAuctionBids(auction);
+        NavigationManager.NavigateTo("/auction/" + auctionid );
+    }
+
+    public async Task BidFunc()
     
     {
         Console.WriteLine(user_id);
@@ -92,19 +102,21 @@ else
         }
         else
         {
-            if (_bid < auction.Bids.Last().value + auction.increment)
+            if (auction.Bids.Count != 0)
             {
-                error = "Invalid Amount";
-            }
-            else
+                if (_bid < auction.Bids.Last().value + auction.increment)
+                {
+                    error = "Invalid Amount";
+                }
+                else
+                {
+                    insertDB();
+                }
+                
+            } else
             {
-            
-                Bidding current_bid = new Bidding(_bid, auction.id, user_id);
-
-                bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);
-                await auctiondb.UpdateAuctionBids(auction);
-                NavigationManager.NavigateTo("/auction/" + auctionid );
-            }
+                insertDB();
+            }  
         }
         
     }
