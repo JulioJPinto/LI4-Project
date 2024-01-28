@@ -1,11 +1,16 @@
 @page "/user/{token}"
 @using BlazorLeilart.Authentication
-@inject Data.Interfaces.IUser database;
+@inject Data.Interfaces.IUser userdb;
+@inject Data.Interfaces.IBiddings bidsbd;
+@inject Data.Interfaces.IAuction auctionbd;
+@inject Blazored.LocalStorage.ILocalStorageService localStore
 
 @layout MainLayout
 
 
-<div class="mt-16 mx-32">
+@if (_hasLoadedData)
+{
+    <div class="mt-16 mx-32">
     <div class="flex flex-row">
         <div class="rounded-full overflow-hidden">
             <img src="https://placehold.co/100"/>
@@ -16,66 +21,131 @@
                     <div class="text-3xl font-semibold">
                         @_user.Email
                     </div>
-                    <div class="text-lg font-regular">
-                        +351 @_user.Phone;
-                    </div>
+                    @if (_user.Phone != "0")
+                    {
+                        <div class="text-lg font-regular">
+                            +351 @_user.Phone;
+                        </div>
+                    }
+                    
                 </div>
-                <a class="mx-64">
-                    <PrimaryButton Title="Edit"></PrimaryButton>
-                </a>
+                @if(_isUser)
+                {
+                    <a class="mx-64">
+                        <PrimaryButton Title="Edit"></PrimaryButton>
+                    </a>
+                }
+                
             </div>
         </div>
     </div>
-    <div class="py-8">
+    
+    @if(_isUser)
+    {
+       <div class="py-8">
         <div class="text-sm font-regular my-2" >Auctions</div>
         <div class="text-3xl font-bold">In Progress</div>
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
-            @foreach (Product product in _products)
+            @if (_auctions != null)
             {
-                <a href="/auction">
-                    <div class="relative items-center">
-                        <img src="https://placehold.co/300"/>
-                        <h2 class="font-semibold">@product.name</h2>
-                        <h3>@product.variety_id</h3>
-                        <h2 class="font-semibold text-xl">$@product.stock</h2>
-                    </div>
-                </a>
+                @foreach (Auction a in _auctions)
+                {
+                    @if (a.status && a != null)
+                    {
+                        <a href="/auction/@a.id">
+                            <div class="relative items-center">
+                                @if (a.Product != null)
+                                {
+                                    <img src="@a.Product.url"/>
+                                    <h2 class="font-semibold text-xl">@a.Product.name</h2>
+                                }
+                                else
+                                {
+                                    <p>No product available</p>
+                                }
+                        
+                                @if (a.Bids.Count != 0)
+                                {
+                                    <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
+                                } else {
+                                    <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
+                                }
+                            
+                            </div>
+                        </a>  
+                    }
+                }
+            }
+            else
+            {
+                <p>No Auctions to be found</p>
             }
         </div>
     </div>
     <div class="py-8">
-        <div class="text-sm font-regular my-2" >Auctions</div>
-        <div class="text-3xl font-bold">Won</div>
-        <div class="grid grid-cols-4 gap-8 pt-12 relative">
-            @foreach (Product product in _products)
-            {
-                <a href="/auction">   
-                    <div class="relative items-center">
-                        <img src="https://placehold.co/300"/>
-                        <h2 class="font-semibold">@product.name</h2>
-                        <h3>@product.variety_id</h3>
-                        <h2 class="font-semibold text-xl">$@product.stock</h2>
-                    </div>
-                </a>
-            }
-        </div>
-    </div>
+        @if (_wonauctions.Count != 0)
+        {
+            <div class="text-sm font-regular my-2">Auctions</div>
+            <div class="text-3xl font-bold">Won</div>
+            <div class="grid grid-cols-4 gap-8 pt-12 relative">
+                @foreach (Auction a in _wonauctions)
+                {
+                    @if (a.status)
+                    {
+                        <a href="/auction/@a.id">
+                            <div class="relative items-center">
+                                @if (a.Product != null)
+                                {
+                                    <img src="@a.Product.url"/>
+                                    <h2 class="font-semibold text-xl">@a.Product.name</h2>
+                                }
+                                else
+                                {
+                                    <p>No product available</p>
+                                }
+                                <h2 class="font-semibold"> Paid Value: $@a.Bids.Last().value</h2>
+
+                            </div>
+                        </a>
+                    }
+                }
+            </div> 
+        }
+        
+    </div> 
+    }
+    
 </div>
 
+}
 @code {
 
     [Parameter] public string token { get; set; }
     private User _user = new User();
-    
+    private List<Bidding> _biddings = null;
+    private List<Auction> _auctions = null;
+    private List<Auction> _wonauctions = null;
     
     private List<Product> _products = new List<Product>();
-    private bool _hasLoadedData = true;
-    
+    private bool _hasLoadedData = false;
+    private bool _isUser = false;
+
     protected override async Task OnInitializedAsync()
     {
         string decodedToken = TokenSession.Base64Decode(token);
+        _user = await userdb.GetUserByEmailAsync(decodedToken);
 
-        _user = await database.GetUserByEmailAsync(decodedToken);
+        _biddings = await bidsbd.GetBiddingByUserAsync(_user.Id.ToString());
+        _auctions = await auctionbd.GetDistinctAuctionsOrderedByLastBidAsync(_user.Id.ToString());
+        
+        _wonauctions = _auctions
+            .Where(auction => !auction.status && auction.Bids.Last().user_id == _user.Id)
+            .ToList();
+
+        string localtoken = await localStore.GetItemAsync<string>("session");
+        if (localtoken == token) _isUser = true;
+        
+        _hasLoadedData = true;
     }
-    
+
 }

@@ -11,4 +11,6 @@ public interface IBiddings
     Task<bool> UpdateBidding(Bidding bidding);
     Task<List<Bidding>> GetAllBiddingsAsync();
     Task<List<Bidding>> GetAllBiddingsFilteredbyAuctionAsync(string id);
+    Task<List<Bidding>> GetBiddingByUserAsync(string id);
+    Task<List<Bidding>> GetBiddingsbyUserAndAuctionAsync(string userid, string auctionid);
 }

@@ -41,15 +41,18 @@ else
                   </div>
               </div>
               <div class="mt-2 text-md font-regular">Increments: @auction.minimum_value.00 €</div>
-              <div class="mt-64 flex flex-row">
-                  <a @onclick="BidFunc">
-                      <PrimaryButton Title="Bid"/>
-                  </a>
-                  <input @bind="_bid" class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
-              </div>
-              @if (error != "")
+              @if (auction.status)
               {
-                  <p class="text-md my-2 text-red-500">@error</p>
+                  <div class="mt-64 flex flex-row">
+                      <a @onclick="BidFunc">
+                          <PrimaryButton Title="Bid"/>
+                      </a>
+                      <input @bind="_bid" class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
+                  </div>
+                  @if (error != "")
+                  {
+                      <p class="text-md my-2 text-red-500">@error</p>
+                  } 
               }
           </div>
       </div>
@@ -88,7 +91,6 @@ else
         Bidding current_bid = new Bidding(_bid, auction.id, user_id);
 
         bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);
-        await auctiondb.UpdateAuctionBids(auction);
         NavigationManager.NavigateTo("/auction/" + auctionid );
     }
 

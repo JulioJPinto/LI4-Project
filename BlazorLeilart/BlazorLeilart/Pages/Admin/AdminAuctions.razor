@@ -1,5 +1,6 @@
 @page "/admin/auctions"
-@using BlazorLeilart.Shared
+
+@inject Data.Interfaces.IAuction auctionbd;
 @layout AdminLayout
 
 <div class="w-full px-16 pt-14">
@@ -7,57 +8,101 @@
         <div class="text-sm font-regular my-2" >Auctions</div>
         <div class="text-3xl font-bold">On going</div>
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
-            @foreach (Product product in _products)
+        @if (_auctions != null)
+        {
+            @foreach (Auction a in _auctions)
             {
-                <a href="/auction">   
-                    <div class="relative items-center">
-                        <img src="https://placehold.co/300"/>
-                        <h2 class="font-semibold">@product.name</h2>
-                        <h3>@product.variant</h3>
-                        <h2 class="font-semibold text-xl">$@product.price</h2>
-                    </div>
-                </a>
+                @if (a.status && a != null)
+                {
+                    <a href="/auction/@a.id">
+                        <div class="relative items-center">
+                            @if (a.Product != null)
+                            {
+                                <img src="@a.Product.url"/>
+                                <h2 class="font-semibold text-xl">@a.Product.name</h2>
+                            }
+                            else
+                            {
+                                <p>No product available</p>
+                            }
+
+                            @if (a.Bids.Count != 0)
+                            {
+                                <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
+                            }
+                            else
+                            {
+                                <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
+                            }
+
+                        </div>
+                    </a>
+                }
             }
+        }
         </div>
     </div>
-    <div class="py-8">
-        <div class="text-sm font-regular my-2" >Auctions</div>
-        <div class="text-3xl font-bold">Recently Finished</div>
-        <div class="grid grid-cols-4 gap-8 pt-12 relative">
-            @foreach (Product product in _products)
-            {
-                <a href="/auction">   
-                    <div class="relative items-center">
-                        <img src="https://placehold.co/300"/>
-                        <h2 class="font-semibold">@product.name</h2>
-                        <h3>@product.variant</h3>
-                        <h2 class="font-semibold text-xl">$@product.price</h2>
-                    </div>
-                </a>
-            }
+    @if (_wonauctions.Count != 0)
+    {
+        <div class="py-8">
+            <div class="text-sm font-regular my-2">Auctions</div>
+            <div class="text-3xl font-bold">Recently Finished</div>
+            <div class="grid grid-cols-4 gap-8 pt-12 relative">
+
+                @foreach (Auction a in _wonauctions)
+                {
+                    @if (a.status && a != null)
+                    {
+                        <a href="/auction/@a.id">
+                            <div class="relative items-center">
+                                @if (a.Product != null)
+                                {
+                                    <img src="@a.Product.url"/>
+                                    <h2 class="font-semibold text-xl">@a.Product.name</h2>
+                                }
+                                else
+                                {
+                                    <p>No product available</p>
+                                }
+
+                                @if (a.Bids.Count != 0)
+                                {
+                                    <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
+                                }
+                                else
+                                {
+                                    <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
+                                }
+
+                            </div>
+                        </a>
+                    }
+                }
+            </div>
         </div>
-    </div>
+    }
 </div>
 
 
 @code {
-    class Product
-    {
-        public string name;
-        public string variant;
-        public int price;
-        public string photo_url;
-    }
     
-    private List<Product> _products = new List<Product>();
-    private bool _hasLoadedData = true;
+    private List<Auction> _auctions = null;
+    private List<Auction> _wonauctions = new List<Auction>();
+    private bool _hasLoadedData = false;
     
     protected override async Task OnInitializedAsync()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            _products.Add(new Product(){name = "Product name", price = 10, variant = "Variant"});
-        }
+        _auctions = await auctionbd.GetAuctionsByLastBidAsync();
+        _wonauctions = _auctions
+            .Where(auction => !auction.status)
+            .ToList();
+
+        _hasLoadedData = true;
+    }
+
+    public async Task MakeAdminFunc()
+    {
+        
     }
     
 }

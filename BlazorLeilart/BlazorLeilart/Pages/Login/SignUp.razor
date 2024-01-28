@@ -79,7 +79,7 @@
     
     public async Task<bool> IsValidPassword(string password)
     {
-        return password != null && password != "" && password.Length > 0;
+        return password != null && password.Length > 0;
     }
     
     private async Task SignUpFunc()
@@ -97,8 +97,8 @@
         }
         else
         {
-            if (await IsValidEmail(email)) error = "Invalid Email";
-            if (await IsValidPassword(password)) error = "Invalid Password";
+            if (!await IsValidEmail(email)) error = "Invalid Email";
+            if (!await IsValidPassword(password)) error = "Invalid Password";
         }
         
         

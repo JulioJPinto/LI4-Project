@@ -1,7 +1,7 @@
 <nav class= "bg-black border-gray-200 border-b-2 border-b-black w-full ">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <img src="assets/images/leilartwhite.svg" class="h-8 py-1" alt="Leilart" />
+        <img src="images/leilartwhite.svg" class="h-8 py-1" alt="Leilart" />
     </a>
     <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-black rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-controls="navbar-default" aria-expanded="false">
         <span class="sr-only">Open main menu</span>
@@ -18,30 +18,20 @@
         </li>
       }
     </ul>
-      
-    <div class="mx-8 flex gap-x-4">
-      @if (!_isLogedIn)
-      {
-        <a href="/login"><PrimaryButton Title="Log In"/></a>
-        <a href="/signup"><PrimaryButton Title="Sign Up" CustomStyle="bg-black text-white"/></a>
-      }
-      else
-      {
-        <a href="/user"><PrimaryButton Title="Logged In"></PrimaryButton></a>
-      }
-    </div>
+
   </div>
   </div>
 </nav>
 
 @code {
-
-  private bool _isLogedIn = true;
+  
   private Dictionary<string, string> _navLinks = new Dictionary<string, string>()
   {
     {"Auctions", "/admin/auctions"},
     {"Users", "/admin/users"},
     {"Analytics", "/analytics"},
   };
+  
+
 
 }

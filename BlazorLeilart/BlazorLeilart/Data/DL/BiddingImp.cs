@@ -37,7 +37,7 @@ namespace BlazorLeilart.Data.Interfaces.Auctions
                     AuctionId = bidding.auction_id,
                     UserId = bidding.user_id
                 });
-
+                
                 return true;
             }
 
@@ -89,6 +89,20 @@ namespace BlazorLeilart.Data.Interfaces.Auctions
         public async Task<List<Bidding>> GetAllBiddingsFilteredbyAuctionAsync(string auctionid)
         {
             return (await _dbConnection.Connection.QueryAsync<Bidding>("SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = auctionid })).ToList();
+        }
+
+        public async Task<List<Bidding>> GetBiddingByUserAsync(string userid)
+        {
+            return (await _dbConnection.Connection.QueryAsync<Bidding>(
+                "SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = userid })).ToList();
+        }
+        
+        public async Task<List<Bidding>> GetBiddingsbyUserAndAuctionAsync(string userid, string auctionid)
+        {
+            string query = "SELECT * FROM bidding WHERE auction_id = @auctionid AND user_id = @userid ORDER BY value ASC;";
+
+            return (await _dbConnection.Connection.QueryAsync<Bidding>(
+                query, new { auctionid, userid })).ToList();
         }
     }
 }

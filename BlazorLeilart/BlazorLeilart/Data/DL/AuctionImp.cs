@@ -49,18 +49,13 @@ public class AuctionImp : IAuction
                     CurrentBid = auction.current_bid,
                     Status = auction.status
                 });
-
-                auction.Product = await _dbConnection.Connection.ExecuteScalarAsync<Product>(
-                        "SELECT * FROM product WHERE auction_id = @id ", new {id = auction.product_id});
-                auction.Bids = (await _dbConnection.Connection.QueryAsync<Bidding>(
-                    "SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = auction.id })).ToList();
-
+                
                 return true;
             }
 
             return false;
         }
-
+        
         public async Task<bool> RemoveAuctionByIdAsync(string id)
         {
             if (await ContainsKeyAsync(id) > 0)
@@ -126,4 +121,60 @@ public class AuctionImp : IAuction
                 "SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = auction.id })).ToList();
             
         }
+        
+        public async Task<List<Auction>> GetDistinctAuctionsOrderedByLastBidAsync(string userid)
+        {
+            // Subquery to get the latest bid time for each auction
+            string subquery = "(SELECT MAX([time]) FROM bidding WHERE auction_id = a.id AND user_id = @userid)";
+
+            // Build the SQL query to retrieve auction IDs with the latest bid time
+            string query = $"SELECT a.id " +
+                           $"FROM auction a " +
+                           $"WHERE a.id IN (SELECT DISTINCT auction_id FROM bidding WHERE user_id = @userid) " +
+                           $"ORDER BY {subquery} DESC";
+
+            // Execute the query and retrieve the auctions
+            var ids = await _dbConnection.Connection.QueryAsync<int>(query, new { userid });
+            var auctions = new List<Auction>();
+            foreach (int id in ids)
+            {
+                Auction a = await GetAuctionbyIdAsync(id.ToString());
+                Product p = await _dbConnection.Connection.QueryFirstOrDefaultAsync<Product>("SELECT * FROM [product] WHERE id = @inputid", new { inputid = a.product_id });
+                a.Product = p;
+                a.Bids = (await _dbConnection.Connection.QueryAsync<Bidding>("SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = a.id })).ToList();
+                auctions.Add(a);
+            }
+            
+            return auctions.ToList();
+        }
+        
+        public async Task<List<Auction>> GetAuctionsByLastBidAsync()
+        {
+            // Subquery to get the latest bid time for each auction
+            string subquery = "(SELECT MAX([time]) FROM bidding WHERE auction_id = a.id)";
+
+            // Build the SQL query to retrieve auction IDs with the latest bid time
+            string query = $"SELECT a.id " +
+                           $"FROM auction a " +
+                           $"WHERE a.id IN (SELECT DISTINCT auction_id FROM bidding ) " +
+                           $"ORDER BY {subquery} DESC";
+
+            // Execute the query and retrieve the auction IDs
+            var auctionIds = await _dbConnection.Connection.QueryAsync<int>(query);
+    
+            // Fetch the corresponding auctions
+            var auctions = new List<Auction>();
+            foreach (int auctionId in auctionIds)
+            {
+                Auction auction = await GetAuctionbyIdAsync(auctionId.ToString());
+                Product p = await _dbConnection.Connection.QueryFirstOrDefaultAsync<Product>("SELECT * FROM [product] WHERE id = @inputid", new { inputid = auction.product_id });
+                auction.Product = p;
+                auction.Bids = (await _dbConnection.Connection.QueryAsync<Bidding>("SELECT * FROM bidding WHERE auction_id = @id ORDER BY value ASC;", new { id = auction.id })).ToList();
+                auctions.Add(auction);
+            }
+
+            return auctions;
+        }
+
+
 }

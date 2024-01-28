@@ -86,8 +86,29 @@ namespace BlazorLeilart.Data.Interfaces.Users
 
         public async Task<List<User>> GetAllUsersAsync()
         {
-            return (await _dbConnection.Connection.QueryAsync<User>("SELECT * FROM user")).ToList();
+            return (await _dbConnection.Connection.QueryAsync<User>("SELECT * FROM [user]")).ToList();
         }
+
+        public async Task<bool> IsAdmin(string user)
+        {
+            string query = "SELECT admin FROM [user] WHERE email = @inputEmail";
+            return await _dbConnection.Connection.ExecuteScalarAsync<bool>(query, new { inputEmail = user });
+        }
+        
+        public async Task<bool> MakeAdmin(User u)
+        {
+            string query = "UPDATE [user] SET admin = 1 WHERE id = @Id";
+            var affectedRows = await _dbConnection.Connection.ExecuteAsync(query, new { Id = u.Id });
+            return true;
+        }
+        
+        public async Task<bool> RemoveAdmin(User u)
+        {
+            string query = "UPDATE [user] SET admin = 0 WHERE id = @Id";
+            var affectedRows = await _dbConnection.Connection.ExecuteAsync(query, new { Id = u.Id });
+            return true;
+        }
+
         
     }
 }

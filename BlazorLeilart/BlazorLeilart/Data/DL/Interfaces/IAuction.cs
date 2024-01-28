@@ -1,4 +1,5 @@
 using BlazorLeilart.Models.Auction;
+using BlazorLeilart.Models.Bidding;
 
 namespace BlazorLeilart.Data.Interfaces;
 
@@ -12,5 +13,9 @@ public interface IAuction
     Task<List<Auction>> GetAllAuctionsAsync();
 
     Task UpdateAuctionBids(Auction auction);
+
+    Task<List<Auction>> GetDistinctAuctionsOrderedByLastBidAsync(string userid);
+
+    Task<List<Auction>> GetAuctionsByLastBidAsync();
 }
 

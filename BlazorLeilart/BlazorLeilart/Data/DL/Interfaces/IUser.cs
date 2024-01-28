@@ -19,4 +19,10 @@ public interface IUser
     Task<bool> UpdateUser(User user);
 
     Task<List<User>> GetAllUsersAsync();
+
+    Task<bool> IsAdmin(string user);
+    
+    Task<bool> MakeAdmin(User u);
+
+    Task<bool> RemoveAdmin(User u);
 }
