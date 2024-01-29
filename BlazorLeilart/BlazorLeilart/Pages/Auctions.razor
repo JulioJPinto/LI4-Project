@@ -56,6 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Task.Delay(1000);
         _auctions = await auction.GetAllAuctionsAsync();
         foreach (Auction a in _auctions)
         {

@@ -54,7 +54,7 @@
 
   public TokenSession _session = null;
   public bool _isAdmin = false;
-  public bool _isLogedIn = false;
+  public bool _isLogedIn = true;
   public bool _loading = false;
   
   protected override async Task OnInitializedAsync()
@@ -62,13 +62,11 @@
           // Check if there is a session in local storage
           if (await localStore.ContainKeyAsync("session"))
           {
-            
               // Retrieve the session from local storage
               string token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
               _session = new TokenSession(token);
               
               _isAdmin = await userdb.IsAdmin(token);
-              _isLogedIn = true;
               _loading = true;
           }
       }

@@ -97,6 +97,8 @@
                 session = new TokenSession(user.Email);
                 string token = session.getToken();
                 await localStore.SetItemAsync("session", token);
+                
+                Task.Delay(1000);
                 NavigationManager.NavigateTo("/user/" + token);
             }
         }

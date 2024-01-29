@@ -104,5 +104,19 @@ namespace BlazorLeilart.Data.Interfaces.Auctions
             return (await _dbConnection.Connection.QueryAsync<Bidding>(
                 query, new { auctionid, userid })).ToList();
         }
+
+        public async Task<Bidding> GetHighestBidinAuctionAsync(string auctionId)
+        {
+            // Assuming you have some kind of SQL connection or DbContext (e.g., dbContext)
+            // Adjust the following line based on your actual implementation
+            string query = $"SELECT TOP 1 * FROM Bidding WHERE AuctionId = @AuctionId ORDER BY Value DESC";
+
+            // Assuming you're using Dapper or some other library for SQL operations
+            // Adjust the following line based on your actual implementation
+            Bidding highestBid = await _dbConnection.Connection.QueryFirstOrDefaultAsync<Bidding>(query, new { AuctionId = auctionId });
+
+            return highestBid;
+        }
+
     }
 }

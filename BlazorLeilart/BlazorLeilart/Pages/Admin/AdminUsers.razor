@@ -33,11 +33,11 @@
               <div>
                 @if (u.Admin)
                 {
-                  <a class="mx-1"><PrimaryButton Title="Remove Admin"/></a>
+                  <a @onclick="() => RemoveAdminFunc(u)" class="mx-1"><PrimaryButton Title="Remove Admin"/></a>
                 }
                 else
                 {
-                  <a class="mx-1"><PrimaryButton Title="Make Admin"/></a>
+                  <a @onclick="() => MakeAdminFunc(u)" class="mx-1"><PrimaryButton Title="Make Admin"/></a>
                 }
                 
                 <a class="mx-1"><PrimaryButton Title="Ban"/></a>
@@ -58,6 +58,7 @@
 
   protected override async Task OnInitializedAsync()
   {
+    Task.Delay(1000);
     _users = await userdb.GetAllUsersAsync();
     _loading = true;
   }
@@ -72,4 +73,5 @@
     userdb.RemoveAdmin(u);
   }
 
+}
 }

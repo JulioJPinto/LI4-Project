@@ -13,4 +13,5 @@ public interface IBiddings
     Task<List<Bidding>> GetAllBiddingsFilteredbyAuctionAsync(string id);
     Task<List<Bidding>> GetBiddingByUserAsync(string id);
     Task<List<Bidding>> GetBiddingsbyUserAndAuctionAsync(string userid, string auctionid);
+    Task<Bidding> GetHighestBidinAuctionAsync(string auctionId);
 }

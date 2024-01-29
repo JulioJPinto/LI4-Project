@@ -1,5 +1,8 @@
 @page "/user/{token}"
 @using BlazorLeilart.Authentication
+@using BlazorLeilart.Data
+@using System.Data
+@inject Data.IDBConnection db;
 @inject Data.Interfaces.IUser userdb;
 @inject Data.Interfaces.IBiddings bidsbd;
 @inject Data.Interfaces.IAuction auctionbd;
@@ -132,6 +135,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Task.Delay(1000);
         string decodedToken = TokenSession.Base64Decode(token);
         _user = await userdb.GetUserByEmailAsync(decodedToken);
 
@@ -144,7 +148,7 @@
 
         string localtoken = await localStore.GetItemAsync<string>("session");
         if (localtoken == token) _isUser = true;
-        
+
         _hasLoadedData = true;
     }
 

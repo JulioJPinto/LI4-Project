@@ -54,6 +54,17 @@ else
                       <p class="text-md my-2 text-red-500">@error</p>
                   } 
               }
+              @if (user.Admin)
+              {
+                  <div class="mt-64 flex flex-row">
+                      <a @onclick="EditFormFunc">
+                          <PrimaryButton Title="Edit Auction"/>
+                      </a>
+                      <input @bind="_bid" class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
+                  </div>
+              }
+              
+              
           </div>
       </div>
   </div>
@@ -64,14 +75,17 @@ else
     [Parameter]
     public string auctionid { get; set; }
     public bool _loading = false;
+    public bool _editing = false;
     public int _bid;
     public int user_id = -1;
     public string error;
 
     public Auction auction;
+    public User user;
 
     protected override async Task OnInitializedAsync()
     {
+        Task.Delay(1000);
         auction = await auctiondb.GetAuctionbyIdAsync(auctionid);
         auction.Product = await productbd.GetProductByIdAsync(auction.product_id.ToString());
         auction.Bids = await bidsdb.GetAllBiddingsFilteredbyAuctionAsync(auctionid);
@@ -79,47 +93,44 @@ else
         if (await localStore.ContainKeyAsync("session"))
         {
             // Retrieve the session from local storage
-            string token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
-            user_id = (await userdb.GetUserByEmailAsync(token)).Id;
+            string token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session")); 
+            user = (await userdb.GetUserByEmailAsync(token));
+            user_id = user.Id;
         }
         
         _loading = true;
     }
-
-    private async Task insertDB()
-    {
-        Bidding current_bid = new Bidding(_bid, auction.id, user_id);
-
-        bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);
-        NavigationManager.NavigateTo("/auction/" + auctionid );
-    }
-
+    
     public async Task BidFunc()
     
     {
-        Console.WriteLine(user_id);
         if (user_id == -1)
         {
             NavigationManager.NavigateTo("/login");
         }
         else
         {
-            if (auction.Bids.Count != 0)
+            if ((auction.Bids.Count > 0 && _bid <= auction.Bids.Last().value + auction.increment) ||
+                (auction.Bids.Count == 0 && _bid <= auction.initial_value + auction.increment))
             {
-                if (_bid < auction.Bids.Last().value + auction.increment)
-                {
-                    error = "Invalid Amount";
-                }
-                else
-                {
-                    insertDB();
-                }
+                error = "Invalid Amount";
+            }
+             else
+             {
+                 Bidding current_bid = new Bidding(_bid, auction.id, user_id);
+
+                 bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);
+                 auction.Bids.Add(current_bid);
+                 StateHasChanged();
+             }
                 
-            } else
-            {
-                insertDB();
-            }  
         }
         
     }
+
+    public async Task EditFormFunc()
+    {
+        _editing = true;
+    }
+    
 }
