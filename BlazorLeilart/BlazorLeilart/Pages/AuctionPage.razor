@@ -5,6 +5,7 @@
 @inject Data.Interfaces.IProduct productbd
 @inject Data.Interfaces.IBiddings bidsdb
 @inject Data.Interfaces.IUser userdb
+@inject IJSRuntime js
 @page "/auction/{auctionid}"
 
 @if (!_loading)
@@ -41,7 +42,7 @@ else
                   </div>
               </div>
               <div class="mt-2 text-md font-regular">Increments: @auction.minimum_value.00 €</div>
-              @if (auction.status)
+              @if (auction.status && !user.Admin)
               {
                   <div class="mt-64 flex flex-row">
                       <a @onclick="BidFunc">
@@ -57,10 +58,9 @@ else
               @if (user.Admin)
               {
                   <div class="mt-64 flex flex-row">
-                      <a @onclick="EditFormFunc">
-                          <PrimaryButton Title="Edit Auction"/>
+                      <a @onclick="FinishFunc">
+                          <PrimaryButton Title="Finish Auction"/>
                       </a>
-                      <input @bind="_bid" class="border-2 py-2 px-4 mx-2 border-black rounded-sm w-full">
                   </div>
               }
               
@@ -128,9 +128,16 @@ else
         
     }
 
-    public async Task EditFormFunc()
+    public async Task FinishFunc()
     {
-        _editing = true;
+        auction.finishAuction();
+        bool updated = await auctiondb.UpdateAuction(auction);
+        
+        if (updated)
+        {
+            js.InvokeVoidAsync("alert", "Account created!");
+        }
+
     }
     
 }

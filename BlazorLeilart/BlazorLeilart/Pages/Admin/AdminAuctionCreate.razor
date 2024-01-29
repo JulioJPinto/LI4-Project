@@ -1,9 +1,77 @@
 @page "/admin/auction/create"
+@using System.ComponentModel.DataAnnotations
 
 @inject Data.Interfaces.IAuction auctionbd;
+@inject Data.Interfaces.IProduct productsbd;
+@inject IJSRuntime js
 @layout AdminLayout
+
+    <div class="flex flex-row gap-16">
+        <div class="form-group w-1/2">
+            <h4 class="text-2xl font-semibold my-4">Auction Create</h4>
+            <label for="phone" class="font-regular">Initial Value</label>
+            <input type="phone" id="phone" @bind="initial_value" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+            <label for="pass" class="font-regular">Increment</label>
+            <input type="pass" id="pass" @bind="increment" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+            <label for="pass" class="font-regular">ProductId</label>
+            <input type="pass" id="pass" @bind="producid" class="form-control border-2 py-2 px-4 my-2 border-black rounded-sm w-full"/>
+        </div>
+        <div class="flex flex-col">
+            <h4 class="text-2xl font-semibold my-4">Product List</h4>
+            @if (loading_p)
+            {
+                
+                <div>
+                    @foreach (Product p in Products)
+                    {
+                        <div class="flex flex-col gap-2">
+                            <p>Name: @p.name</p>
+                            <p>Stock: @p.stock</p>
+                            <p>ID: @p.id</p>
+                        </div> 
+                    }
+                    
+                </div>
+            }
+        </div>
+    </div> 
+
+
+<div class="mt-8">
+    <button @onclick="CreateAuctionFunc" class="border-2 py-2 px-4 border-black rounded-sm bg-black text-white">
+        Create
+    </button>
+</div>
+
 
 
 @code {
     
+    [Required] public int initial_value;
+    [Required] public int increment;
+    [Required] public int producid;
+    public bool loading_p = false;
+    public bool _isAdmin = true;
+
+    public List<Product> Products;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Products = await productsbd.GetAllProductsAsync();
+        Task.Delay(1000);
+        loading_p = true;
+
+    }
+
+    public async Task CreateAuctionFunc()
+    {
+        Auction a = new Auction(initial_value, increment, producid);
+        bool added = await auctionbd.PutAuctionAsync(a);
+        
+        if (added)
+        {
+            js.InvokeVoidAsync("alert", "Account created!");
+        }
+    }
+
 }

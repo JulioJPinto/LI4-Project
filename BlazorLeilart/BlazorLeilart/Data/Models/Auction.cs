@@ -37,7 +37,25 @@ public class Auction
         this.Bids = new List<Bidding.Bidding>();
     }
 
-
+    public void finishAuction()
+    {
+        status = false;
+    }
+    public Auction(int i, int incr, int pid)
+    {
+        this.id = -1;
+        this.auction_type_id = 1;
+        this.product_id = pid;
+        this.minimum_value = -1;
+        this.initial_value = i;
+        this.increment = incr;
+        this.start = System.DateTime.Now;
+        this.end = System.DateTime.Now.Add(System.TimeSpan.FromDays(5));
+        this.current_bid = -1;
+        this.status = false;
+        this.Product = null;
+        this.Bids = new List<Bidding.Bidding>();
+    }
     public Auction()
     {
         this.id = -1;

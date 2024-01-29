@@ -10,7 +10,7 @@
                 <div class="text-sm font-regular my-2">Auctions</div>
                 <div class="text-3xl font-bold">On going</div>
             </div>
-            <a href="/admin/auctions/create" class="mt-4"><PrimaryButton Title="Create Auction"></PrimaryButton></a>
+            <a href="/admin/auction/create" class="mt-4"><PrimaryButton Title="Create Auction"></PrimaryButton></a>
         </div>
         
         <div class="grid grid-cols-4 gap-8 pt-12 relative">
@@ -98,12 +98,13 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Task.Delay(1000);
+        
         _auctions = await auctionbd.GetAuctionsByLastBidAsync();
         _wonauctions = _auctions
             .Where(auction => !auction.status)
             .ToList();
-
+        
+        Task.Delay(1000);
         _hasLoadedData = true;
     }
 

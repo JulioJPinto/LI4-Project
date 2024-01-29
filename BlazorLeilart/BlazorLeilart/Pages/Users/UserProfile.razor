@@ -135,7 +135,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Task.Delay(1000);
         string decodedToken = TokenSession.Base64Decode(token);
         _user = await userdb.GetUserByEmailAsync(decodedToken);
 
@@ -148,7 +147,8 @@
 
         string localtoken = await localStore.GetItemAsync<string>("session");
         if (localtoken == token) _isUser = true;
-
+        
+        Task.Delay(1000);
         _hasLoadedData = true;
     }
 
