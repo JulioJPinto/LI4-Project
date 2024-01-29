@@ -41,7 +41,7 @@ else
                       
                   </div>
               </div>
-              <div class="mt-2 text-md font-regular">Increments: @auction.minimum_value.00 €</div>
+              <div class="mt-2 text-md font-regular">Increments: @auction.increment.00 €</div>
               @if (auction.status && !user.Admin)
               {
                   <div class="mt-64 flex flex-row">
@@ -85,7 +85,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Task.Delay(1000);
         auction = await auctiondb.GetAuctionbyIdAsync(auctionid);
         auction.Product = await productbd.GetProductByIdAsync(auction.product_id.ToString());
         auction.Bids = await bidsdb.GetAllBiddingsFilteredbyAuctionAsync(auctionid);
@@ -97,7 +96,8 @@ else
             user = (await userdb.GetUserByEmailAsync(token));
             user_id = user.Id;
         }
-        
+
+        Task.Delay(2000);
         _loading = true;
     }
     
@@ -116,7 +116,9 @@ else
                 error = "Invalid Amount";
             }
              else
-             {
+             {  
+                 Console.WriteLine((auction.Bids.Last().value));
+                 Console.WriteLine((auction.increment));
                  Bidding current_bid = new Bidding(_bid, auction.id, user_id);
 
                  bool validate_insert = await bidsdb.PutBiddingAsync(current_bid);

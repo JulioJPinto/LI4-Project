@@ -46,12 +46,62 @@
                 }
             </div>
         }
-    </div>  
+    </div> 
+
+@if (_closedauctions.Count != 0)
+        {
+            <div class="w-full px-16 pt-14">
+                <h3 class="font-medium pb-3">Auctions</h3>
+                <h1 class="font-bold text-4xl pb-4">Closed</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
+            
+                @if (!_hasLoadedData)
+                {
+                    <div class="w-full h-[50vh] flex justify-center content-center flex-wrap">
+                        Loading Data
+                    </div>
+                }
+                else
+                {
+                    <div class="grid grid-cols-4 gap-8 pt-12 relative">
+                        @foreach (Auction a in _closedauctions)
+                        {
+                            <a href="/auction/@a.id">
+                                <div class="relative items-center">
+                                    @if (a.Product != null)
+                                    {
+                                        <img src="@a.Product.url"/>
+                                        <h2 class="font-semibold text-xl">@a.Product.name</h2>
+                                    }
+                                    else
+                                    {
+                                        <p>No product available</p>
+                                    }
+                                
+                                    @if (a.Bids.Count != 0)
+                                    {
+                                        <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
+                                    } else {
+                                        <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
+                                    }
+                                    
+                                </div>
+                            </a>
+                        
+                        }
+                    </div>
+                }
+            </div> 
+        
+        }
+
+
 
 
 @code {
     
     private List<Auction> _auctions = new List<Auction>();
+    private List<Auction> _closedauctions = new List<Auction>();
     private bool _hasLoadedData = false;
 
     protected override async Task OnInitializedAsync()
@@ -59,10 +109,13 @@
         _auctions = await auction.GetAllAuctionsAsync();
         foreach (Auction a in _auctions)
         {
-            a.Bids = await bidding.GetAllBiddingsFilteredbyAuctionAsync(a.id.ToString());
+            a.Bids = (await bidding.GetAllBiddingsFilteredbyAuctionAsync(a.id.ToString()));
         }
-        
-        Task.Delay(1000);
+
+        _closedauctions = _auctions.Where(a => a.status == false).ToList();
+        _auctions = _auctions.Where(a => a.status == true).ToList();
+
+        Task.Delay(2000);
         _hasLoadedData = true;
     }
 

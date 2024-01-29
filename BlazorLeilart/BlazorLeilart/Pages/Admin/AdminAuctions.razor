@@ -48,16 +48,16 @@
             }
         </div>
     </div>
-    @if (_wonauctions.Count != 0)
+    @if (_finished.Count != 0)
     {
         <div class="py-8">
             <div class="text-sm font-regular my-2">Auctions</div>
             <div class="text-3xl font-bold">Recently Finished</div>
             <div class="grid grid-cols-4 gap-8 pt-12 relative">
 
-                @foreach (Auction a in _wonauctions)
+                @foreach (Auction a in _finished)
                 {
-                    @if (a.status && a != null)
+                    @if (!a.status && a != null)
                     {
                         <a href="/auction/@a.id">
                             <div class="relative items-center">
@@ -93,16 +93,15 @@
 @code {
     
     private List<Auction> _auctions = null;
-    private List<Auction> _wonauctions = new List<Auction>();
+    private List<Auction> _finished = new List<Auction>();
     private bool _hasLoadedData = false;
     
     protected override async Task OnInitializedAsync()
     {
         
         _auctions = await auctionbd.GetAuctionsByLastBidAsync();
-        _wonauctions = _auctions
-            .Where(auction => !auction.status)
-            .ToList();
+        _finished = _auctions.Where(a => a.status == false).ToList();
+        _auctions = _auctions.Where(a => a.status == true).ToList();
         
         Task.Delay(1000);
         _hasLoadedData = true;

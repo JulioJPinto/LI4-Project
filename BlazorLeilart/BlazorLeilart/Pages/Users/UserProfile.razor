@@ -45,46 +45,52 @@
     
     @if(_isUser)
     {
-       <div class="py-8">
-        <div class="text-sm font-regular my-2" >Auctions</div>
-        <div class="text-3xl font-bold">In Progress</div>
-        <div class="grid grid-cols-4 gap-8 pt-12 relative">
-            @if (_auctions != null)
+        <div class="py-8">
+            @if (_auctions.Count != 0)
             {
-                @foreach (Auction a in _auctions)
-                {
-                    @if (a.status && a != null)
+                <div class="text-sm font-regular my-2">Auctions</div>
+                <div class="text-3xl font-bold">In Progress</div>
+                <div class="grid grid-cols-4 gap-8 pt-12 relative">
+                    @if (_auctions != null)
                     {
-                        <a href="/auction/@a.id">
-                            <div class="relative items-center">
-                                @if (a.Product != null)
-                                {
-                                    <img src="@a.Product.url"/>
-                                    <h2 class="font-semibold text-xl">@a.Product.name</h2>
-                                }
-                                else
-                                {
-                                    <p>No product available</p>
-                                }
-                        
-                                @if (a.Bids.Count != 0)
-                                {
-                                    <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
-                                } else {
-                                    <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
-                                }
-                            
-                            </div>
-                        </a>  
+                        @foreach (Auction a in _auctions)
+                        {
+                            @if (a.status && a != null)
+                            {
+                                <a href="/auction/@a.id">
+                                    <div class="relative items-center">
+                                        @if (a.Product != null)
+                                        {
+                                            <img src="@a.Product.url"/>
+                                            <h2 class="font-semibold text-xl">@a.Product.name</h2>
+                                        }
+                                        else
+                                        {
+                                            <p>No product available</p>
+                                        }
+
+                                        @if (a.Bids.Count != 0)
+                                        {
+                                            <h2 class="font-semibold"> Current Value: $@a.Bids.Last().value</h2>
+                                        }
+                                        else
+                                        {
+                                            <h2 class="font-semibold"> Starting Value: $@a.initial_value</h2>
+                                        }
+
+                                    </div>
+                                </a>
+                            }
+                        }
                     }
-                }
+                    else
+                    {
+                        <p>No Auctions to be found</p>
+                    }
+                </div> 
             }
-            else
-            {
-                <p>No Auctions to be found</p>
-            }
+            
         </div>
-    </div>
     <div class="py-8">
         @if (_wonauctions.Count != 0)
         {
@@ -93,7 +99,7 @@
             <div class="grid grid-cols-4 gap-8 pt-12 relative">
                 @foreach (Auction a in _wonauctions)
                 {
-                    @if (a.status)
+                    @if (!a.status && a != null)
                     {
                         <a href="/auction/@a.id">
                             <div class="relative items-center">
@@ -144,11 +150,12 @@
         _wonauctions = _auctions
             .Where(auction => !auction.status && auction.Bids.Last().user_id == _user.Id)
             .ToList();
+        _auctions = _auctions.Where(a => a.status).ToList();
 
         string localtoken = await localStore.GetItemAsync<string>("session");
         if (localtoken == token) _isUser = true;
         
-        Task.Delay(1000);
+        Task.Delay(2000);
         _hasLoadedData = true;
     }
 
