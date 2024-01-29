@@ -52,7 +52,7 @@ public class Auction
         this.start = System.DateTime.Now;
         this.end = System.DateTime.Now.Add(System.TimeSpan.FromDays(5));
         this.current_bid = -1;
-        this.status = false;
+        this.status = true;
         this.Product = null;
         this.Bids = new List<Bidding.Bidding>();
     }

@@ -99,7 +99,7 @@
                 await localStore.SetItemAsync("session", token);
                 
                 Task.Delay(1000);
-                NavigationManager.NavigateTo("/user/" + token);
+                NavigationManager.NavigateTo("/");
             }
         }
         else

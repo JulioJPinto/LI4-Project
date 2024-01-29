@@ -81,8 +81,8 @@ else
     public string error;
 
     public Auction auction;
-    public User user;
-
+    public User user = new User();
+    
     protected override async Task OnInitializedAsync()
     {
         auction = await auctiondb.GetAuctionbyIdAsync(auctionid);
@@ -110,7 +110,7 @@ else
         }
         else
         {
-            if ((auction.Bids.Count > 0 && _bid <= auction.Bids.Last().value + auction.increment) ||
+            if ((auction.Bids.Count > 0 && _bid < auction.Bids.Last().value + auction.increment) ||
                 (auction.Bids.Count == 0 && _bid <= auction.initial_value + auction.increment))
             {
                 error = "Invalid Amount";

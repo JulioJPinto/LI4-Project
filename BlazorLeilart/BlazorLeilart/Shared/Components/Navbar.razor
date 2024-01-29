@@ -26,10 +26,8 @@
       }
     </ul>
     
-    @if (_loading)
-    {
       <div class="mx-8 flex gap-x-4">
-        @if (!_isLogedIn)
+        @if (!jb)
         {
           <a href="/login"><PrimaryButton Title="Log In"/></a>
           <a href="/signup"><PrimaryButton Title="Sign Up" CustomStyle="bg-black text-white"/></a>
@@ -44,7 +42,7 @@
           <a @onclick="LogOutFunc"><PrimaryButton Title="Sign Out" CustomStyle="bg-black text-white"/></a>
         }
       </div>
-    }
+    
     
   </div>
   </div>
@@ -54,9 +52,7 @@
 
   public TokenSession _session = null;
   public bool _isAdmin = false;
-  public bool _isLogedIn = true;
-  public bool _loading = false;
-  
+  public bool jb = false;
   protected override async Task OnInitializedAsync()
       {
           // Check if there is a session in local storage
@@ -65,9 +61,9 @@
               // Retrieve the session from local storage
               string token = TokenSession.Base64Decode(await localStore.GetItemAsync<string>("session"));
               _session = new TokenSession(token);
-              
+
+              jb = true;
               _isAdmin = await userdb.IsAdmin(token);
-              _loading = true;
           }
       }
 
@@ -76,7 +72,7 @@
   {
     await localStore.ClearAsync();
     _session = null;
-    _isLogedIn = false;
+    jb = false;
     NavigationManager.NavigateTo("/");
   }
   
